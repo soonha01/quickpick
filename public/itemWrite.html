@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>아이템 글작성</title>
+    <!-- CSS -->
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- JS -->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+</head>
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- 사이드 bar -->
+        <div id="sidebar-container"></div>
+        <!-- End of Sidebar -->
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- 탑 bar -->
+                <div id="topbar-container"></div>
+                <div class="container-fluid">
+                    <!-- 여기부터 개발 -->
+
+                    <!-- 화면 왼쪽 상단 페이지명 -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">아이템 글 작성</h1>
+                    </div>
+
+                    <!-- 글쓰기 폼 -->
+                    <form id="itemWriteForm">
+                        <div class="form-group">
+                            <label for="image">이미지 업로드</label>
+                            <input type="file" class="form-control-file" id="image">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="title">제목</label>
+                            <input type="text" class="form-control" id="title" placeholder="제목을 입력하세요">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">설명</label>
+                            <textarea class="form-control" id="description" rows="5" placeholder="설명을 입력하세요"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="duration">마감 시간 선택</label>
+                            <select class="form-control" id="duration">
+                                <option value="3">3시간</option>
+                                <option value="6">6시간</option>
+                                <option value="9">9시간</option>
+                                <option value="12">12시간</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="minPrice">최소 금액</label>
+                            <input type="number" class="form-control" id="minPrice" placeholder="예: 10000  원">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bidStep">호가 단위</label>
+                            <input type="number" class="form-control" id="bidStep" placeholder="예: 500  원">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </form>
+
+                </div>   
+            </div>
+            <div id="footer-container"></div>
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>    
+
+</body>
+<script>
+  const includes = [
+    ['sidebar-container', '/partials/sidebar.html'],
+    ['topbar-container', '/partials/topbar.html'],
+    ['footer-container', '/partials/footer.html']
+  ];
+  includes.forEach(([id, url]) => {
+    fetch(url)
+      .then(res => res.text())
+      .then(html => {
+        const target = document.getElementById(id);
+        if (target) {
+          target.innerHTML = html;
+        } else {
+          console.warn(`⚠️ ID "${id}"를 가진 요소가 HTML에 없음`);
+        }
+      });
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('itemWriteForm');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const imageFile = document.getElementById('image').files[0];
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const duration = document.getElementById('duration').value;
+      const minPrice = parseInt(document.getElementById('minPrice').value);
+      const bidStep = parseInt(document.getElementById('bidStep').value);
+
+      if (!title || !description || !duration || isNaN(minPrice) || isNaN(bidStep)) {
+        alert('모든 입력값을 올바르게 입력해주세요.');
+        return;
+      }
+
+      console.log('입력값 확인:', { title, description, duration, minPrice, bidStep });
+
+      try {
+        const res = await fetch('/items/itemWrite', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            duration,
+            minPrice,
+            bidStep
+          })
+        });
+
+        if (res.ok) {
+          alert('경매글 등록 성공!');
+          window.location.href = '/items/itemList';
+        } else {
+          alert('등록 실패 😢');
+        }
+      } catch (err) {
+        console.error('에러 발생:', err);
+        alert('서버 에러가 발생했습니다.');
+      }
+    });
+  });
+</script>
+
+
+</html>

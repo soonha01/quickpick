@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>경매 상세</title>
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/js/sb-admin-2.min.js"></script>
+</head>
+<body id="page-top">
+  <div id="wrapper">
+    <div id="sidebar-container"></div>
+
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <div id="topbar-container"></div>
+
+        <div class="container-fluid">
+          <!-- 제목 -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">경매 상세보기</h1>
+          </div>
+
+          <!-- 상세 내용 표시 영역 -->
+            <div class="container mt-5">
+                <div class="card shadow p-4">
+                    <h3 id="title" class="mb-3 text-primary">제목</h3>
+
+                    <p><strong>설명:</strong> <span id="description" class="text-muted"></span></p>
+                    <p><strong>현재가:</strong> <span id="current_price" class="text-muted"></span></p>
+                    <p><strong>호가 단위:</strong> <span id="bid_unit" class="text-muted"></span></p>
+                    <p><strong>마감 시간:</strong> <span id="end_time" class="text-muted"></span></p>
+                    <p><strong>상태:</strong> <span id="status" class="badge badge-success"></span></p>
+
+                    <div class="mt-4">
+                        <button id="bidButton" class="btn btn-lg btn-warning">입찰하기</button>
+                        <p id="bidResult" class="mt-2 text-success" style="display: none;">입찰 완료!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오른쪽 하단 고정 버튼 -->
+            <a href="/items/itemList" class="btn btn-primary rounded-circle shadow"
+            style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+            ←
+            </a>
+
+        </div>
+      </div>
+      <div id="footer-container"></div>
+    </div>
+  </div>
+
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- HTML 포함용 -->
+  <script>
+    const includes = [
+      ['sidebar-container', '/partials/sidebar.html'],
+      ['topbar-container', '/partials/topbar.html'],
+      ['footer-container', '/partials/footer.html']
+    ];
+    includes.forEach(([id, url]) => {
+      fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById(id).innerHTML = html;
+        });
+    });
+  </script>
+
+  <!-- 상세 데이터 로딩 -->
+  <script src="/js/itemDetail.js"></script>
+</body>
+</html>

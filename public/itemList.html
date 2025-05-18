@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>경매목록</title>
+    <!-- CSS -->
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- JS -->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    
+</head>
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- 사이드 bar -->
+        <div id="sidebar-container"></div>
+        <!-- End of Sidebar -->
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- 탑 bar -->
+                <div id="topbar-container"></div>
+                <div class="container-fluid">
+                    <!-- 여기부터 개발 -->
+                     <button id="writeButton"
+                        class="btn btn-primary rounded-circle"
+                        style="position: fixed; bottom: 40px; right: 40px; width: 60px; height: 60px; z-index: 1000;">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <!-- 화면 왼쪽 상단 페이지명 -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">경매목록</h1>
+                    </div>
+                    <!-- ✅ 아이템 카드들이 들어갈 자리 추가 -->
+                    <div class="row" id="item-list"></div>
+
+                </div>   
+            </div>
+            <div id="footer-container"></div>
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>    
+
+</body>
+<script>
+    const includes = [
+      ['head-includes', '/partials/head.html'],
+      ['sidebar-container', '/partials/sidebar.html'],
+      ['topbar-container', '/partials/topbar.html'],
+      ['footer-container', '/partials/footer.html']
+    ];
+     includes.forEach(([id, url]) => {
+    fetch(url)
+      .then(res => res.text())
+      .then(html => {
+        const target = document.getElementById(id);
+        if (target) {
+          target.innerHTML = html;
+        } else {
+          console.warn(`⚠️ ID "${id}"를 가진 요소가 HTML에 없음`);
+        }
+    });
+});
+</script>
+<script src="/js/itemList.js"></script>
+</html>
