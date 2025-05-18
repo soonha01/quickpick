@@ -3,7 +3,7 @@ const session = require('express-session');
 const path = require('path');
 const app = express();
 
-//세션 설정
+//세션 설정//
 app.use(session({
   secret: 'your-secret-key',   // 실제 서비스에선 랜덤하고 복잡한 문자열 사용
   resave: false,
