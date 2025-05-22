@@ -20,13 +20,13 @@
       padding: 1rem;
       overflow-y: auto;
     }
-    .chat-main {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      margin-left: auto;
-    }
+   .chat-main {
+  width: 70%; /* 기존 50% → 70%로 확장 */
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin-left: auto;
+}
     .chat-messages {
       flex-grow: 1;
       border: 1px solid #ddd;
@@ -56,9 +56,10 @@
       margin-bottom: 1rem;
     }
     #sendMessage {
-      font-size: 0.8rem !important;
-      padding: 0.4rem 0.6rem;
-    }
+  font-size: 0.75rem !important; 
+  padding: 0.4rem 1rem;          
+  min-width: 70px;               
+}
   </style>
 
   <!-- chat.html 내부에 삽입되는 JS 스크립트 -->
