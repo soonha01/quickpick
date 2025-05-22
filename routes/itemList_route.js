@@ -1,21 +1,26 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const db = require('../db'); 
+const db = require('../db');
 
-const items = [];  // 메모리에 저장할 임시 목록
-
-
-// 최초 페이지
+// 경매 리스트 페이지
 router.get('/itemList', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/itemList.html'));
 });
 
+// 경매 글쓰기 페이지
 router.get('/itemWrite', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/itemWrite.html'));
 });
 
+// 경매 글 등록 처리
 router.post('/itemWrite', async (req, res) => {
+  console.log('📦 세션 정보:', req.session.user);
+  const user = req.session.user; // ✅ 이 줄 꼭 필요함!
+  
+  if (!user) {
+    return res.status(401).json({ message: '로그인이 필요합니다.' });
+  }
   const { title, description, duration, minPrice, bidStep } = req.body;
 
   try {
@@ -30,7 +35,7 @@ router.post('/itemWrite', async (req, res) => {
         '진행중', NOW(), ''
       ) RETURNING *;
     `, [
-      1, // user_key 고정 (테스트용)
+      user.user_key, 
       title,
       description,
       minPrice,
@@ -40,29 +45,34 @@ router.post('/itemWrite', async (req, res) => {
     console.log('DB 등록 완료:', result.rows[0]);
     res.sendStatus(200);
   } catch (err) {
-    console.error('DB 등록 오류:', err);
-    res.sendStatus(500);
+    console.error('❌ DB 등록 오류 발생:', err.message);
+     res.status(500).json({ error: err.message });
   }
 });
 
-//GET 요청으로 리스트를 받아올 수 있는 API 만들기
+// 경매 리스트 데이터 API (마감 처리 포함)
 router.get('/itemList/data', async (req, res) => {
   try {
+    // ⏰ 마감된 경매 상태 변경
+    await db.query(`
+      UPDATE auction
+      SET status = '마감'
+      WHERE end_time < NOW() AND status = '진행중';
+    `);
+
     const result = await db.query(`
-      SELECT auction_key AS id, title, content, current_price, bid_unit,  -- ✅ 여기 포함됐는지 확인
+      SELECT auction_key AS id, title, content, current_price, bid_unit,
         TO_CHAR(end_time, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS end_time,
         status
       FROM auction
-      ORDER BY created_at DESC
-`);
-
-    console.log(result.rows); // 👀 확인용 로그
+      ORDER BY created_at DESC;
+    `);
 
     const items = result.rows.map(item => ({
       id: item.id,
       title: item.title,
       description: item.content,
-      current: item.current_price,   // ✅ 명확한 이름
+      current: item.current_price,
       bidStep: item.bid_unit,
       end_time: item.end_time,
       status: item.status
@@ -74,8 +84,5 @@ router.get('/itemList/data', async (req, res) => {
     res.sendStatus(500);
   }
 });
-
-
-
 
 module.exports = router;

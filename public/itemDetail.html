@@ -58,24 +58,7 @@
   <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
   </a>
-
-  <!-- HTML 포함용 -->
-  <script>
-    const includes = [
-      ['sidebar-container', '/partials/sidebar.html'],
-      ['topbar-container', '/partials/topbar.html'],
-      ['footer-container', '/partials/footer.html']
-    ];
-    includes.forEach(([id, url]) => {
-      fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById(id).innerHTML = html;
-        });
-    });
-  </script>
-
-  <!-- 상세 데이터 로딩 -->
-  <script src="/js/itemDetail.js"></script>
 </body>
+<script src="/js/includeAndSession.js"></script>
+<script src="/js/itemDetail.js"></script>
 </html>

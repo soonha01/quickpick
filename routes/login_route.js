@@ -37,7 +37,7 @@ router.post('/login', async (req, res) => {
       const user = result.rows[0];
 
       req.session.user = {
-        id: user.id,
+        user_key: user.user_key,
         login_id: user.login_id,
         display_name: user.display_name
       };
@@ -52,16 +52,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-
-// 로그인 했는지 체크
-router.get('/session-user', (req, res) => {
-  console.log('loginData ==', JSON.stringify(req.session.user));
-  if (req.session.user) {
-    res.json({success: true, user_nm: req.session.user.name });
-  } else {
-    res.status(401).json({ success: false});
-  }
-});
 
 // 아이디 또는 닉네임 중복 확인 (login_id, display_name 기준)
 router.get('/check-duplicate', async (req, res) => {

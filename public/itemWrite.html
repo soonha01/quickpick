@@ -86,25 +86,8 @@
     </a>    
 
 </body>
+<script src="/js/includeAndSession.js"></script>
 <script>
-  const includes = [
-    ['sidebar-container', '/partials/sidebar.html'],
-    ['topbar-container', '/partials/topbar.html'],
-    ['footer-container', '/partials/footer.html']
-  ];
-  includes.forEach(([id, url]) => {
-    fetch(url)
-      .then(res => res.text())
-      .then(html => {
-        const target = document.getElementById(id);
-        if (target) {
-          target.innerHTML = html;
-        } else {
-          console.warn(`⚠️ ID "${id}"를 가진 요소가 HTML에 없음`);
-        }
-      });
-  });
-
   document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('itemWriteForm');
 
@@ -131,6 +114,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
+          credentials: 'include', // ⭐️⭐️⭐️⭐️⭐️ 이거 꼭 넣어야 세션 유지됨!
           body: JSON.stringify({
             title,
             description,
@@ -153,6 +137,4 @@
     });
   });
 </script>
-
-
 </html>

@@ -53,25 +53,6 @@
     </a>    
 
 </body>
-<script>
-    const includes = [
-      ['head-includes', '/partials/head.html'],
-      ['sidebar-container', '/partials/sidebar.html'],
-      ['topbar-container', '/partials/topbar.html'],
-      ['footer-container', '/partials/footer.html']
-    ];
-     includes.forEach(([id, url]) => {
-    fetch(url)
-      .then(res => res.text())
-      .then(html => {
-        const target = document.getElementById(id);
-        if (target) {
-          target.innerHTML = html;
-        } else {
-          console.warn(`⚠️ ID "${id}"를 가진 요소가 HTML에 없음`);
-        }
-    });
-});
-</script>
+<script src="/js/includeAndSession.js"></script>
 <script src="/js/itemList.js"></script>
 </html>

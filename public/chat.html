@@ -109,18 +109,7 @@
   <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
   <!-- 레이아웃 컴포넌트 로딩 -->
-  <script>
-    const includes = [
-      ['sidebar-container', '/partials/sidebar.html'],
-      ['topbar-container', '/partials/topbar.html'],
-      ['footer-container', '/partials/footer.html']
-    ];
-    includes.forEach(([id, url]) => {
-      fetch(url).then(res => res.text()).then(html => {
-        document.getElementById(id).innerHTML = html;
-      });
-    });
-  </script>
+  <script src="/js/includeAndSession.js"></script>
 
   <!-- 필수 스크립트 -->
   <script src="/vendor/jquery/jquery.min.js"></script>

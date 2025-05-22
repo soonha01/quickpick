@@ -68,19 +68,5 @@
     </a>    
 
 </body>
-<script>
-    const includes = [
-    ['head-includes', '/partials/head.html'],
-    ['sidebar-container', '/partials/sidebar.html'],
-    ['topbar-container', '/partials/topbar.html'],
-    ['footer-container', '/partials/footer.html']
-    ];
-    includes.forEach(([id, url]) => {
-      fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById(id).innerHTML = html;
-        });
-    });
-</script>
+<script src="/js/includeAndSession.js"></script>
 </html>
