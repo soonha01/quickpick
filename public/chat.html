@@ -1,65 +1,139 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>채팅</title>
-    <!-- CSS -->
-    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <title>채팅</title>
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+  <style>
+    .chat-container {
+      display: flex;
+      height: 600px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .chat-sidebar {
+      width: 30%;
+      border-right: 1px solid #ddd;
+      background-color: #f8f9fc;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .chat-main {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      margin-left: auto;
+    }
+    .chat-messages {
+      flex-grow: 1;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 1rem;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      background-color: white;
+    }
+    .chat-input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .chat-room-item {
+      padding: 10px;
+      border-radius: 5px;
+      background-color: white;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    .chat-room-item:hover {
+      background-color: #e2e6ea;
+    }
+    .chat-filters {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    #sendMessage {
+      font-size: 0.8rem !important;
+      padding: 0.4rem 0.6rem;
+    }
+  </style>
 
-    <!-- JS -->
-    <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="/js/sb-admin-2.min.js"></script>
-    <script src="/js/chat.js"></script>
-</head>
-<body id="page-top">
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-        <!-- 사이드 bar -->
-        <div id="sidebar-container"></div>
-        <!-- End of Sidebar -->
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- 탑 bar -->
-                <div id="topbar-container"></div>
-                <div class="container-fluid">
-                    <!-- 여기부터 개발 -->
-                    <!-- 화면 왼쪽 상단 페이지명 -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">채팅</h1>
-                    </div>
-
-                </div>   
-            </div>
-            <div id="footer-container"></div>
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>    
-
-</body>
+  <!-- chat.html 내부에 삽입되는 JS 스크립트 -->
 <script>
+  const userKey = 1;
+  const userName = "홍길동"; // 이게 없거나 객체면 문제 생김
+</script>
+
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <div id="sidebar-container"></div>
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <div id="topbar-container"></div>
+        <div class="container-fluid">
+
+          <!-- 필터 버튼 -->
+          <div class="chat-filters">
+            <button class="btn btn-outline-secondary btn-sm" id="filter-all">전체</button>
+            <button class="btn btn-outline-primary btn-sm" id="filter-bid">낙찰</button>
+            <button class="btn btn-outline-success btn-sm" id="filter-done">거래완료</button>
+          </div>
+
+          <!-- 채팅 화면 -->
+          <div class="chat-container">
+            <!-- 왼쪽 채팅방 목록 -->
+            <div class="chat-sidebar">
+              <div id="roomList"></div>
+            </div>
+
+            <!-- 오른쪽 채팅 메시지 -->
+            <div class="chat-main">
+              <div id="messages" class="chat-messages"></div>
+              <div class="chat-input-group">
+                <input type="text" id="messageInput" class="form-control" placeholder="메시지를 입력하세요">
+                <button class="btn btn-primary" id="sendMessage">전송</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="footer-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
+
+  <!-- 레이아웃 컴포넌트 로딩 -->
+  <script>
     const includes = [
-      ['head-includes', '/partials/head.html'],
       ['sidebar-container', '/partials/sidebar.html'],
       ['topbar-container', '/partials/topbar.html'],
       ['footer-container', '/partials/footer.html']
     ];
     includes.forEach(([id, url]) => {
-      fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById(id).innerHTML = html;
-        });
+      fetch(url).then(res => res.text()).then(html => {
+        document.getElementById(id).innerHTML = html;
+      });
     });
-</script>
-<script src="js/chat.js"></script>
+  </script>
+
+  <!-- 필수 스크립트 -->
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/js/sb-admin-2.min.js"></script>
+
+  <!-- Socket.io 연결 + 채팅 스크립트 -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- 유저 정보는 chat_route.js에서 서버가 삽입 -->
+  <!-- 예: <script>const userKey = 1; const userName = "홍길동";</script> -->
+
+  <script src="/js/chat.js"></script>
+</body>
 </html>
