@@ -22,27 +22,35 @@ router.get('/chat', (req, res) => {
   });
 });
 
-// 채팅방 목록 조회
+// 채팅방 목록 조회 (필터 적용)
 router.get('/rooms', async (req, res) => {
   const userKey = req.session.user?.user_key || 1;
+  const filter = req.query.status || '전체';
+
+  let statusCondition = '';
+  if (filter === '낙찰') {
+    statusCondition = `AND a.status = '낙찰'`;
+  } else if (filter === '거래완료') {
+    statusCondition = `AND a.status = '거래완료'`;
+  }
 
   try {
     const result = await db.query(`
-      SELECT DISTINCT ON (c.chat_key) cr.chat_key, c.auction_key, a.title
+      SELECT DISTINCT ON (c.chat_key) cr.chat_key, a.title
       FROM "chattingRoom" cr
       JOIN chatting c ON cr.chat_key = c.chat_key
       JOIN auction a ON c.auction_key = a.auction_key
-      WHERE cr.user_key = $1
+      WHERE cr.user_key = $1 ${statusCondition}
       ORDER BY c.chat_key, cr.chat_created_at DESC
     `, [userKey]);
 
-    console.log('[✅ 채팅방 목록]', result.rows);
     res.json(result.rows);
   } catch (err) {
     console.error('❌ 채팅방 조회 에러:', err);
     res.status(500).json({ message: '서버 오류' });
   }
 });
+
 
 // 메시지 저장 API
 router.post('/save', async (req, res) => {
