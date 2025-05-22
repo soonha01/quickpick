@@ -29,6 +29,28 @@
                 <div id="topbar-container"></div>
                 <div class="container-fluid">
                     <!-- 여기부터 개발 -->
+                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">마이페이지</h1>
+                    </div>
+                    <!-- 마이페이지 프로필 폼 -->
+                     <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">회원 정보 수정</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="profileForm">
+                                <div class="form-group">
+                                    <label for="display_name">닉네임</label>
+                                    <input type="text" class="form-control" id="display_name" name="display_name" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone_number">전화번호</label>
+                                    <input type="text" class="form-control" id="phone_number" name="phone_number" required />
+                                </div>
+                                <button type="submit" class="btn btn-primary">수정하기</button>
+                            </form>
+                        </div>
+                    </div>
                     <!-- 화면 왼쪽 상단 페이지명 -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">마이페이지</h1>
