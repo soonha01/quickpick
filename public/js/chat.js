@@ -1,7 +1,7 @@
 const socket = io();
 let currentRoomId = null;
 
-// 채팅방 목록 불러오기
+// 채팅방 목록 가져오기
 fetch('/chat/rooms')
   .then(res => res.json())
   .then(rooms => {
@@ -16,16 +16,19 @@ fetch('/chat/rooms')
       div.onclick = () => {
         currentRoomId = room.chat_key;
         socket.emit('joinRoom', currentRoomId);
-        document.getElementById('messages').innerHTML = '';
 
-        // 채팅 메시지 불러오기
+        // 메시지 초기화
+        const messageBox = document.getElementById('messages');
+        messageBox.innerHTML = '';
+
+        // 메시지 불러오기
         fetch(`/chat/messages/${room.chat_key}`)
           .then(res => res.json())
           .then(messages => {
-            const messageBox = document.getElementById('messages');
             messages.forEach(msg => {
               const p = document.createElement('p');
-              p.textContent = `${msg.chat_content}`;
+              const time = new Date(msg.send_time).toLocaleString();
+              p.textContent = `[${time}] ${msg.chat_content}`;
               messageBox.appendChild(p);
             });
             messageBox.scrollTop = messageBox.scrollHeight;
@@ -40,29 +43,34 @@ fetch('/chat/rooms')
 socket.on('chatMessage', (data) => {
   const messageBox = document.getElementById('messages');
   const p = document.createElement('p');
-  p.textContent = `${data.userName || '익명'}: ${data.message}`;
+  const time = new Date().toLocaleString();
+  p.textContent = `[${time}] ${data.userName || '익명'}: ${data.message}`;
   messageBox.appendChild(p);
   messageBox.scrollTop = messageBox.scrollHeight;
 });
 
-// 메시지 전송
+// 메시지 전송 이벤트
 document.getElementById('sendMessage').addEventListener('click', sendMessage);
 document.getElementById('messageInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
+// 메시지 전송 함수
 function sendMessage() {
   const input = document.getElementById('messageInput');
   const message = input.value.trim();
+
   if (!message || !currentRoomId) return;
+
+  // 콘솔 디버깅 로그
+  console.log('[전송할 메시지]', message);
 
   // 실시간 전송
   socket.emit('chatMessage', {
-  chatRoomId: currentRoomId,
-  userName: String(userName), // 강제로 문자열 변환
-  message
-});
-
+    chatRoomId: currentRoomId,
+    userName: String(userName),
+    message: message
+  });
 
   // DB 저장
   fetch('/chat/save', {
