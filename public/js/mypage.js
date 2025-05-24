@@ -1,5 +1,8 @@
 window.addEventListener('DOMContentLoaded', () => {
-  fetch('/mypage/userinfo')
+  fetch('/mypage/userinfo', {
+    method: 'GET',
+    credentials: 'include' // 쿠키 포함해서 세션 유지
+  })
     .then(res => res.json())
     .then(data => {
       if (data.success) {
@@ -18,6 +21,8 @@ window.addEventListener('DOMContentLoaded', () => {
 // 수정하기 버튼 클릭 시
 document.getElementById('profileForm').addEventListener('submit', (e) => {
   e.preventDefault();
+  console.log('폼 제출됨'); // ✅ 이거 추가
+
   const display_name = document.getElementById('display_name').value;
   const phone_number = document.getElementById('phone_number').value;
 
@@ -26,10 +31,12 @@ document.getElementById('profileForm').addEventListener('submit', (e) => {
     headers: {
       'Content-Type': 'application/json'
     },
+    credentials: 'include',
     body: JSON.stringify({ display_name, phone_number })
   })
     .then(res => res.json())
     .then(data => {
+      console.log('응답:', data); // ✅ 이것도 추가
       if (data.success) {
         alert('정보가 성공적으로 수정되었습니다.');
       } else {
