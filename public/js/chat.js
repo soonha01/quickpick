@@ -8,7 +8,7 @@ document.getElementById('filter-done').onclick = () => loadRooms('거래완료')
 
 // 채팅방 목록 가져오기 함수
 function loadRooms(filter = '전체') {
-  fetch(`/chat/rooms?status=${filter}`)
+    fetch(`/chat/rooms`)
     .then(res => res.json())
     .then(rooms => {
       const list = document.getElementById('roomList');
@@ -32,7 +32,7 @@ function loadRooms(filter = '전체') {
               messages.forEach(msg => {
                 const p = document.createElement('p');
                 const time = new Date(msg.send_time).toLocaleString();
-                p.textContent = `[${time}] ${msg.chat_content}`;
+                p.textContent = `[${time}] ${msg.display_name}: ${msg.chat_content}`;
                 messageBox.appendChild(p);
               });
               messageBox.scrollTop = messageBox.scrollHeight;
