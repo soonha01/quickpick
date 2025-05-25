@@ -1,58 +1,77 @@
-window.addEventListener('DOMContentLoaded', () => {
-  fetch('/mypage/userinfo', {
+async function loadUserInfo() {
+  const res = await fetch('/session-user', {
     method: 'GET',
-    credentials: 'include' // 쿠키 포함해서 세션 유지
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        document.getElementById('display_name').value = data.display_name;
-        document.getElementById('phone_number').value = data.phone_number;
-      } else {
-        alert('로그인이 필요합니다.');
-        window.location.href = '/login';
-      }
-    })
-    .catch(err => {
-      console.error('유저 정보 불러오기 실패:', err);
-    });
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+  });
+
+  const data = await res.json();
+  console.log(data); 
+  if (data.user) {
+    const { display_name, phone_number } = data.user;
+
+    // 보기 모드 표시
+    document.getElementById('viewDisplayName').textContent = display_name;
+    document.getElementById('viewPhoneNumber').textContent = phone_number;
+
+    // 수정 모드 기본값 설정
+    document.getElementById('display_name').value = display_name;
+    document.getElementById('phone_number').value = phone_number;
+  }
+}
+
+// 수정 버튼 클릭 시
+document.getElementById('editButton').addEventListener('click', () => {
+  document.getElementById('profileView').style.display = 'none';
+  document.getElementById('profileEdit').style.display = 'block';
 });
 
-// 수정하기 버튼 클릭 시
-document.getElementById('profileForm').addEventListener('submit', (e) => {
+// 취소 버튼 클릭 시
+document.getElementById('cancelEdit').addEventListener('click', () => {
+  document.getElementById('profileEdit').style.display = 'none';
+  document.getElementById('profileView').style.display = 'block';
+});
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  console.log('폼 제출됨'); // ✅ 이거 추가
 
   const display_name = document.getElementById('display_name').value;
   const phone_number = document.getElementById('phone_number').value;
 
-  fetch('/mypage/update', {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    body: JSON.stringify({ display_name, phone_number })
-  })
-    .then(res => res.json())
-    .then(data => {
-      console.log('응답:', data); // ✅ 이것도 추가
-      if (data.success) {
-        alert('정보가 성공적으로 수정되었습니다.');
-        const userNameElement = document.getElementById('userName');
+  try {
+    const res = await fetch('/mypage/update', {
+      method: 'PATCH', 
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ display_name, phone_number })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      alert('회원 정보가 수정되었습니다.');
+
+      // 보기 모드에 반영
+      document.getElementById('viewDisplayName').textContent = display_name;
+      document.getElementById('viewPhoneNumber').textContent = phone_number;
+
+      // 상단 닉네임도 바꾸기
+      const userNameElement = document.getElementById('userName');
       if (userNameElement) {
         userNameElement.textContent = display_name;
       }
-      } else {
-        alert('수정 실패: ' + data.message);
-      }
-    })
-    .catch(err => {
-      console.error('정보 수정 실패:', err);
-      alert('서버 오류가 발생했습니다.');
-    });
-});
 
+      // 모드 전환
+      document.getElementById('profileEdit').style.display = 'none';
+      document.getElementById('profileView').style.display = 'block';
+    } else {
+      alert(data.message || '수정 실패');
+    }
+  } catch (err) {
+    console.error('정보 수정 오류:', err);
+    alert('서버 오류');
+  }
+});
 document.getElementById('check-duplicate-btn').addEventListener('click', () => {
   const displayName = document.getElementById('display_name').value.trim();
 
@@ -79,3 +98,7 @@ document.getElementById('check-duplicate-btn').addEventListener('click', () => {
       alert('서버 오류가 발생했습니다.');
     });
 });
+
+
+// 페이지 로드 시 정보 불러오기
+loadUserInfo();

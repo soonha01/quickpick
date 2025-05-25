@@ -35,24 +35,35 @@
                     <!-- 마이페이지 프로필 폼 -->
                      <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">회원 정보 수정</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">회원 정보</h6>
                         </div>
                         <div class="card-body">
                             <form id="profileForm">
-                                <div class="form-group">
-                                    <label for="display_name">닉네임</label>
-                                    <div class="input-group">
+                                <!-- 보기 모드 -->
+                                 <div id="profileView">
+                                    <p><strong>닉네임:</strong> <span id="viewDisplayName"></span></p>
+                                    <p><strong>전화번호:</strong> <span id="viewPhoneNumber"></span></p>
+                                    <button type="button" class="btn btn-primary" id="editButton">수정하기</button>
+                                </div>
+                                <!-- 수정 모드 -->
+                                 <div id="profileEdit" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="display_name">닉네임</label>
                                         <input type="text" class="form-control" id="display_name" name="display_name" required />
                                         <div class="input-group-append">
                                             <button type="button" class="btn btn-secondary" id="check-duplicate-btn">중복 확인</button>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="phone_number">전화번호</label>
+                                        <input type="text" class="form-control" id="phone_number" name="phone_number" required />
+                                    </div>
+                                    <button type="submit" class="btn btn-success">저장</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelEdit">취소</button>
                                 </div>
-                                <div class="form-group">
-                                    <label for="phone_number">전화번호</label>
-                                    <input type="text" class="form-control" id="phone_number" name="phone_number" required />
-                                </div>
-                                <button type="submit" class="btn btn-primary">수정하기</button>
+                            </form>
+                        </div>
+
                             </form>
                         </div>
                     </div>

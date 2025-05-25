@@ -39,7 +39,8 @@ router.post('/login', async (req, res) => {
       req.session.user = {
         user_key: user.user_key,
         login_id: user.login_id,
-        display_name: user.display_name
+        display_name: user.display_name,
+        phone_number: user.phone_number //여기 추가
       };
 
       res.json({ success: true, user });
