@@ -39,12 +39,43 @@ document.getElementById('profileForm').addEventListener('submit', (e) => {
       console.log('응답:', data); // ✅ 이것도 추가
       if (data.success) {
         alert('정보가 성공적으로 수정되었습니다.');
+        const userNameElement = document.getElementById('userName');
+      if (userNameElement) {
+        userNameElement.textContent = display_name;
+      }
       } else {
         alert('수정 실패: ' + data.message);
       }
     })
     .catch(err => {
       console.error('정보 수정 실패:', err);
+      alert('서버 오류가 발생했습니다.');
+    });
+});
+
+document.getElementById('check-duplicate-btn').addEventListener('click', () => {
+  const displayName = document.getElementById('display_name').value.trim();
+
+  if (!displayName) {
+    alert('닉네임을 입력하세요.');
+    return;
+  }
+
+  fetch(`/mypage/check-duplicate?field=display_name&value=${encodeURIComponent(displayName)}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        if (data.duplicate) {
+          alert('이미 사용 중인 닉네임입니다.');
+        } else {
+          alert('사용 가능한 닉네임입니다.');
+        }
+      } else {
+        alert('확인 실패: ' + data.message);
+      }
+    })
+    .catch(err => {
+      console.error('중복 확인 실패:', err);
       alert('서버 오류가 발생했습니다.');
     });
 });
