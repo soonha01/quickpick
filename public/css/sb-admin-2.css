@@ -4523,9 +4523,8 @@ input[type="button"].btn-block {
 }
 
 .card-body {
-  flex: 1 1 auto;
-  min-height: 1px;
-  padding: 1.25rem;
+  padding: 12px;
+  font-size: 0.9rem;
 }
 
 .card-title {
@@ -11278,4 +11277,29 @@ footer.sticky-footer .copyright {
 
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
+}
+.card.shadow.h-100 {
+  height: 250px !important;
+  max-height: 250px !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card > .card-img-top {
+  height: 80px !important;
+  max-height: 80px !important;
+  min-height: 80px !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-top-left-radius: 0.75rem !important;
+  border-top-right-radius: 0.75rem !important;
+}
+
+
+.card-body {
+  padding: 10px;
+  font-size: 0.85rem;             /* 폰트도 작게 맞춰줌 */
 }

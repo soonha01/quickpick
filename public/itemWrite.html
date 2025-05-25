@@ -98,30 +98,27 @@
       const title = document.getElementById('title').value.trim();
       const description = document.getElementById('description').value.trim();
       const duration = document.getElementById('duration').value;
-      const minPrice = parseInt(document.getElementById('minPrice').value);
-      const bidStep = parseInt(document.getElementById('bidStep').value);
+      const minPrice = document.getElementById('minPrice').value;
+      const bidStep = document.getElementById('bidStep').value;
 
-      if (!title || !description || !duration || isNaN(minPrice) || isNaN(bidStep)) {
+      if (!title || !description || !duration || !minPrice || !bidStep) {
         alert('모든 입력값을 올바르게 입력해주세요.');
         return;
       }
 
-      console.log('입력값 확인:', { title, description, duration, minPrice, bidStep });
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('duration', duration);
+      formData.append('minPrice', minPrice);
+      formData.append('bidStep', bidStep);
 
       try {
         const res = await fetch('/items/itemWrite', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include', // ⭐️⭐️⭐️⭐️⭐️ 이거 꼭 넣어야 세션 유지됨!
-          body: JSON.stringify({
-            title,
-            description,
-            duration,
-            minPrice,
-            bidStep
-          })
+          body: formData,
+          credentials: 'include' // 세션 유지
         });
 
         if (res.ok) {
@@ -135,6 +132,7 @@
         alert('서버 에러가 발생했습니다.');
       }
     });
+
   });
 </script>
 </html>
