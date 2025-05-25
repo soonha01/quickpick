@@ -1,28 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // db.js에서 pool 가져옴
+const db = require('../db');
 
-// ✅ 채팅 페이지 렌더링
+// dayjs 설정
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+require('dayjs/locale/ko');
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale('ko');
+
+// 채팅 페이지 렌더링
 router.get('/room', (req, res) => {
   const user = req.session.user;
-
-  if (!user) {
-    return res.redirect('/login'); // 로그인 안 되어 있으면 로그인 페이지로 리디렉트
-  }
-
+  if (!user) return res.redirect('/login');
   res.render('chat', {
     userKey: user.user_key,
     userName: user.display_name
   });
 });
 
-// ✅ 채팅방 리스트 가져오기 (chatting 테이블 기준)
+// 채팅방 리스트 가져오기
 router.get('/rooms', async (req, res) => {
   const loginUserKey = req.session.user?.user_key;
-
-  if (!loginUserKey) {
-    return res.status(401).json({ error: '로그인이 필요합니다.' });
-  }
+  if (!loginUserKey) return res.status(401).json({ error: '로그인이 필요합니다.' });
 
   try {
     const result = await db.query(`
@@ -49,41 +51,45 @@ router.get('/rooms', async (req, res) => {
   }
 });
 
-
-// ✅ 특정 채팅방 메시지 가져오기
+// 특정 채팅방 메시지 가져오기 (KST로 포맷)
 router.get('/messages/:chat_key', async (req, res) => {
   const chat_key = req.params.chat_key;
 
   try {
-    const result = await db.query(
-      `SELECT 
-         cr.chat_content, 
-         cr.chat_created_at AS send_time, 
-         u.display_name
-       FROM chattingRoom cr
-       JOIN users u ON cr.user_key = u.user_key
-       WHERE cr.chat_key = $1
-       ORDER BY cr.chat_created_at ASC`,
-      [chat_key]
-    );
+    const result = await db.query(`
+      SELECT 
+        cr.chat_content, 
+        cr.chat_created_at AS send_time, 
+        u.display_name
+      FROM chattingRoom cr
+      JOIN users u ON cr.user_key = u.user_key
+      WHERE cr.chat_key = $1
+      ORDER BY cr.chat_created_at ASC
+    `, [chat_key]);
 
-    res.json(result.rows);
+    const messages = result.rows.map(row => ({
+      chat_content: row.chat_content,
+      display_name: row.display_name,
+      send_time: dayjs.utc(row.send_time).tz('Asia/Seoul').format('YYYY. M. D. A h:mm:ss')
+    }));
+
+    res.json(messages);
   } catch (err) {
     console.error('메시지 조회 실패:', err);
     res.status(500).json({ error: '메시지를 불러오지 못했습니다.' });
   }
 });
 
-// ✅ 메시지 저장
+// 메시지 저장 - created_at 직접 받음
 router.post('/save', async (req, res) => {
-  const { user_key, chat_key, chat_content } = req.body;
+  const { user_key, chat_key, chat_content, created_at } = req.body;
 
   try {
-    await db.query(
-      `INSERT INTO chattingRoom (chat_key, user_key, chat_content, chat_created_at)
-       VALUES ($1, $2, $3, NOW())`,
-      [chat_key, user_key, chat_content]
-    );
+    await db.query(`
+      INSERT INTO chattingRoom (chat_key, user_key, chat_content, chat_created_at)
+      VALUES ($1, $2, $3, $4)
+    `, [chat_key, user_key, chat_content, created_at]);
+
     res.sendStatus(200);
   } catch (err) {
     console.error('메시지 저장 실패:', err);
