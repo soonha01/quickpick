@@ -60,15 +60,16 @@ socket.on('chatMessage', (data) => {
   const p = document.createElement('p');
 
   const time = new Date().toLocaleString('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  });
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  hour12: true //오전/오후 표기
+});
+
 
   p.textContent = `[${time}] ${data.userName || '익명'}: ${data.message}`;
   messageBox.appendChild(p);
