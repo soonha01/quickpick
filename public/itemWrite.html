@@ -23,12 +23,9 @@
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
-
                 <!-- 탑 bar -->
                 <div id="topbar-container"></div>
                 <div class="container-fluid">
-                    <!-- 여기부터 개발 -->
-
                     <!-- 화면 왼쪽 상단 페이지명 -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">아이템 글 작성</h1>
@@ -63,33 +60,52 @@
 
                         <div class="form-group">
                             <label for="minPrice">최소 금액</label>
-                            <input type="number" class="form-control" id="minPrice" placeholder="예: 10000  원">
+                            <input type="text" class="form-control" id="minPrice" placeholder="예: 10,000 원">
                         </div>
 
                         <div class="form-group">
                             <label for="bidStep">호가 단위</label>
-                            <input type="number" class="form-control" id="bidStep" placeholder="예: 500  원">
+                            <input type="text" class="form-control" id="bidStep" placeholder="예: 500 원">
                         </div>
 
                         <button type="submit" class="btn btn-primary">등록</button>
                     </form>
-
                 </div>   
             </div>
             <div id="footer-container"></div>
         </div>
         <!-- End of Content Wrapper -->
-
     </div>
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>    
-
 </body>
+
 <script src="/js/includeAndSession.js"></script>
 <script>
+  function formatNumber(input) {
+    const onlyNum = input.replace(/[^\d]/g, '');
+    return onlyNum.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function unformatNumber(formatted) {
+    return formatted.replace(/,/g, '');
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('itemWriteForm');
+    const minPriceInput = document.getElementById('minPrice');
+    const bidStepInput = document.getElementById('bidStep');
+
+    // 입력 시 자동 콤마 포맷 적용
+    [minPriceInput, bidStepInput].forEach(input => {
+      input.addEventListener('input', function () {
+        const caret = this.selectionStart;
+        const rawValue = this.value.replace(/[^\d]/g, '');
+        this.value = formatNumber(rawValue);
+        this.setSelectionRange(caret, caret);
+      });
+    });
 
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -98,8 +114,8 @@
       const title = document.getElementById('title').value.trim();
       const description = document.getElementById('description').value.trim();
       const duration = document.getElementById('duration').value;
-      const minPrice = document.getElementById('minPrice').value;
-      const bidStep = document.getElementById('bidStep').value;
+      const minPrice = unformatNumber(minPriceInput.value);
+      const bidStep = unformatNumber(bidStepInput.value);
 
       if (!title || !description || !duration || !minPrice || !bidStep) {
         alert('모든 입력값을 올바르게 입력해주세요.');
@@ -132,7 +148,6 @@
         alert('서버 에러가 발생했습니다.');
       }
     });
-
   });
 </script>
 </html>

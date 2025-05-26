@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
+  // ✅ 숫자에 콤마를 붙이는 함수
+  function formatNumberWithComma(num) {
+    const number = Number(num);
+    if (isNaN(number)) return num;
+    return number.toLocaleString(); // ← 핵심: 자동 콤마!
+  }
+
   const writeButton = document.getElementById('writeButton');
   if (writeButton) {
     writeButton.addEventListener('click', function () {
@@ -12,59 +19,51 @@ document.addEventListener('DOMContentLoaded', function () {
       const listContainer = document.getElementById('item-list');
       listContainer.innerHTML = '';
 
-      const timerElements = []; // 남은 시간 요소 모음
+      const timerElements = [];
 
       items.forEach(item => {
-        // 상태 뱃지
         const statusBadge = `<span class="badge ${item.badgeClass}">${item.status}</span>`;
 
-        // 남은 시간 요소 (초록)
         const timeElem = document.createElement('p');
         timeElem.className = 'card-text text-success';
         timeElem.textContent = '남은 시간 계산 중...';
 
-        // 카드 HTML (이미지 포함)
-       const cardHTML = `
-        <div class="card shadow h-100" style="height: 280px; overflow: hidden;">
-          ${item.imageUrl
-            ? `<img src="${item.imageUrl}" 
-                    class="card-img-top"
-                    alt="${item.title} 이미지"
-                    style="height: 140px; width: 100%; object-fit: contain; background-color: white; border-top-left-radius: 8px; border-top-right-radius: 8px;">`
-            : ''
-          }
-          <div class="card-body" style="padding: 10px; font-size: 0.85rem;">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h5 class="card-title">${item.title}</h5>
-              ${statusBadge}
+        const cardHTML = `
+          <div class="card shadow h-100" style="height: 280px; overflow: hidden;">
+            ${item.imageUrl
+              ? `<img src="${item.imageUrl}" 
+                      class="card-img-top"
+                      alt="${item.title} 이미지"
+                      style="height: 140px; width: 100%; object-fit: contain; background-color: white; border-top-left-radius: 8px; border-top-right-radius: 8px;">`
+              : ''
+            }
+            <div class="card-body" style="padding: 10px; font-size: 0.85rem;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="card-title">${item.title}</h5>
+                ${statusBadge}
+              </div>
+              <p class="card-text">현재가: ${formatNumberWithComma(item.current)}원</p>
+              <p class="card-text">호가 단위: ${formatNumberWithComma(item.bidStep)}원</p>
             </div>
-            <p class="card-text">현재가: ${item.current}원</p>
-            <p class="card-text">호가 단위: ${item.bidStep}원</p>
           </div>
-        </div>
-      `;
+        `;
 
-
-        // 카드 삽입
         const card = document.createElement('div');
         card.className = 'col-md-4 mb-4';
         card.innerHTML = cardHTML;
         card.querySelector('.card-body').appendChild(timeElem);
         listContainer.appendChild(card);
 
-        // 클릭 시 상세페이지
         card.querySelector('.card').addEventListener('click', () => {
           window.location.href = `/item/itemDetail?id=${item.id}`;
         });
 
-        // 타이머용 저장
         timerElements.push({
           endTime: new Date(item.end_time),
           dom: timeElem
         });
       });
 
-      // 공통 타이머
       setInterval(() => {
         const now = new Date();
 
