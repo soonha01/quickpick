@@ -1,4 +1,4 @@
-//중복확인 함수
+// 중복확인 함수
 function checkDuplicate(field) {
   const value = document.getElementById(field === 'login_id' ? 'login_id' : 'display_name').value;
 
@@ -22,10 +22,24 @@ function checkDuplicate(field) {
     });
 }
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('registerForm');
+  const phoneInput = document.getElementById('phone_number');
+
+  // ✅ 휴대폰 번호 자동 하이픈 처리 + 숫자만 허용
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, ''); // 숫자만 남김
+
+      if (value.length <= 3) {
+        e.target.value = value;
+      } else if (value.length <= 7) {
+        e.target.value = value.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+      } else {
+        e.target.value = value.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+      }
+    });
+  }
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -33,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formData = {
       login_id: document.getElementById('login_id').value,
       display_name: document.getElementById('display_name').value,
-      phone_number: form.phone_number.value,
+      phone_number: phoneInput.value,
       password: form.password.value,
       password_confirm: form.password_confirm.value
     };
@@ -63,5 +77,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-
-
