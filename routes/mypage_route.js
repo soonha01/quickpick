@@ -17,13 +17,16 @@ router.get('/userinfo', async (req, res) => {
 
   try {
     const result = await db.query(
-      'SELECT display_name, phone_number FROM users WHERE user_key = $1',
+      'SELECT display_name, phone_number, profile_image FROM users WHERE user_key = $1',
       [req.session.user.user_key]   // ✅ 수정됨
     );
 
     if (result.rows.length > 0) {
-      const { display_name, phone_number } = result.rows[0];
-      return res.json({ success: true, display_name, phone_number });
+      const { display_name, phone_number, profile_image } = result.rows[0];
+      return res.json({
+        success: true,
+        user: { display_name, phone_number, profile_image }
+      });
     } else {
       return res.status(404).json({ success: false, message: '사용자 정보 없음' });
     }
@@ -77,5 +80,51 @@ router.get('/check-duplicate', async (req, res) => {
     res.status(500).json({ success: false, message: '서버 오류' });
   }
 });
+
+const multer = require('multer');
+const fs = require('fs');
+
+// 업로드 폴더 설정
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, `user_${req.session.user.user_key}${ext}`);
+  }
+});
+
+const upload = multer({ storage });
+
+// 프로필 이미지 업로드
+router.post('/upload-profile-image', upload.single('profileImage'), async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: '로그인 필요' });
+  }
+
+  const { display_name, phone_number } = req.body;
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : req.session.user.profile_image;
+
+  try {
+    await db.query(
+      'UPDATE users SET display_name = $1, phone_number = $2, profile_image = $3 WHERE user_key = $4',
+      [display_name, phone_number, imagePath, req.session.user.user_key]
+    );
+
+    // 세션 갱신
+    req.session.user.display_name = display_name;
+    req.session.user.phone_number = phone_number;
+    req.session.user.profile_image = imagePath;
+
+    res.json({ success: true, imagePath });
+  } catch (err) {
+    console.error('정보 수정 오류:', err);
+    res.status(500).json({ success: false, message: 'DB 오류' });
+  }
+});
+
 
 module.exports = router;

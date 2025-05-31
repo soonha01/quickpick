@@ -41,12 +41,19 @@
                             <form id="profileForm">
                                 <!-- 보기 모드 -->
                                  <div id="profileView">
+                                    <p><strong>프로필 사진:</strong><br>
+                                        <img id="viewProfileImage" src="/uploads/user_1.jpg" alt="프로필 이미지" width="100">
+                                    </p>
                                     <p><strong>닉네임:</strong> <span id="viewDisplayName"></span></p>
                                     <p><strong>전화번호:</strong> <span id="viewPhoneNumber"></span></p>
                                     <button type="button" class="btn btn-primary" id="editButton">수정하기</button>
                                 </div>
                                 <!-- 수정 모드 -->
                                  <div id="profileEdit" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="profileImage">프로필 이미지</label>
+                                        <input type="file" id="profileImage" accept="image/*" class="form-control-file">
+                                    </div>
                                     <div class="form-group">
                                         <label for="display_name">닉네임</label>
                                         <input type="text" class="form-control" id="display_name" name="display_name" required />

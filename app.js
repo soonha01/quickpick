@@ -13,6 +13,7 @@ const io = socketIo(server);                 //소켓 서버 생성
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));//추가
 
 // 세션 설정
 app.use(session({

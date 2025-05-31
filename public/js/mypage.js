@@ -8,7 +8,7 @@ async function loadUserInfo() {
   const data = await res.json();
   console.log(data); 
   if (data.user) {
-    const { display_name, phone_number } = data.user;
+    const { display_name, phone_number, profile_image } = data.user;
 
     // 보기 모드 표시
     document.getElementById('viewDisplayName').textContent = display_name;
@@ -17,6 +17,8 @@ async function loadUserInfo() {
     // 수정 모드 기본값 설정
     document.getElementById('display_name').value = display_name;
     document.getElementById('phone_number').value = phone_number;
+
+    document.getElementById('profileImageView').src = profile_image || '/images/default-profile.png';
   }
 }
 
@@ -37,13 +39,21 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
 
   const display_name = document.getElementById('display_name').value;
   const phone_number = document.getElementById('phone_number').value;
+  const profileImage = document.getElementById('profileImage').files[0];
+
+  const formData = new FormData();
+  formData.append('display_name', display_name);
+  formData.append('phone_number', phone_number);
+  if (profileImage) {
+    formData.append('profileImage', profileImage);
+  }
 
   try {
-    const res = await fetch('/mypage/update', {
-      method: 'PATCH', 
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ display_name, phone_number })
+    // 1. 회원 정보 수정 + 이미지 업로드 요청
+    const res = await fetch('/mypage/upload-profile-image', {
+      method: 'POST',
+      body: formData,
+      credentials: 'include'
     });
 
     const data = await res.json();
@@ -51,14 +61,19 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     if (res.ok && data.success) {
       alert('회원 정보가 수정되었습니다.');
 
-      // 보기 모드에 반영
       document.getElementById('viewDisplayName').textContent = display_name;
       document.getElementById('viewPhoneNumber').textContent = phone_number;
 
-      // 상단 닉네임도 바꾸기
+      // 닉네임 변경 반영
       const userNameElement = document.getElementById('userName');
-      if (userNameElement) {
-        userNameElement.textContent = display_name;
+      if (userNameElement) userNameElement.textContent = display_name;
+
+      // 프로필 이미지 변경 반영
+      if (data.imagePath) {
+        const profileImg = document.getElementById('viewProfileImage');
+        if (profileImg) {
+          profileImg.src = data.imagePath;
+        }
       }
 
       // 모드 전환
@@ -71,7 +86,9 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     console.error('정보 수정 오류:', err);
     alert('서버 오류');
   }
+  
 });
+
 document.getElementById('check-duplicate-btn').addEventListener('click', () => {
   const displayName = document.getElementById('display_name').value.trim();
 
