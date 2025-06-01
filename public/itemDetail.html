@@ -39,7 +39,11 @@
                     <div class="mt-4">
                         <button id="bidButton" class="btn btn-lg btn-warning">입찰하기</button>
                         <p id="bidResult" class="mt-2 text-success" style="display: none;">입찰 완료!</p>
-                    </div>
+<!-- 거래 완료 버튼 (작성자만 보임) -->
+  <button id="completeButton" class="btn btn-lg btn-danger mt-2" style="display: none;">거래 완료</button>
+</div>
+
+                    
                 </div>
             </div>
 
@@ -61,4 +65,41 @@
 </body>
 <script src="/js/includeAndSession.js"></script>
 <script src="/js/itemDetail.js"></script>
+<script>
+  let writerKey = null;//채팅 관련해서 내용 추가
+  let loginUserKey = null;
+  let auctionId = new URLSearchParams(location.search).get('id');
+
+  fetch(`/items/itemDetail/data?id=${auctionId}`)
+    .then(res => res.json())
+    .then(data => {
+      writerKey = data.writerKey;
+      loginUserKey = data.loginUserKey;
+
+      // 작성자와 로그인 유저가 같으면 거래완료 버튼 보이게
+      if (writerKey && loginUserKey && writerKey === loginUserKey) {
+        document.getElementById('completeButton').style.display = 'inline-block';
+      }
+    });
+
+  // 거래 완료 버튼 클릭 시
+  document.getElementById('completeButton').addEventListener('click', () => {
+    if (!confirm('정말 거래를 완료하시겠습니까?')) return;
+
+    fetch('/items/itemDetail/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: auctionId })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('요청 실패');
+        alert('거래가 완료되었습니다.');
+        location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+        alert('오류가 발생했습니다.');
+      });
+  });//채팅 관련해서 내용 추가
+</script>
 </html>
