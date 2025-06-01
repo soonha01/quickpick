@@ -24,6 +24,7 @@ router.get('/room', (req, res) => {
 // 채팅방 리스트 가져오기
 router.get('/rooms', async (req, res) => {
   const loginUserKey = req.session.user?.user_key;
+
   if (!loginUserKey) return res.status(401).json({ error: '로그인이 필요합니다.' });
 
   try {
@@ -37,6 +38,7 @@ router.get('/rooms', async (req, res) => {
       WHERE cr.user_key = $1
       ORDER BY c.chat_key, cr.chat_created_at DESC
     `, [loginUserKey]);
+
 
     const rooms = result.rows.map(room => ({
       chat_key: room.chat_key,

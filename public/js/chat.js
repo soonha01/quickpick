@@ -1,7 +1,7 @@
 const socket = io();
 let currentRoomId = null;
 
-//KST 기준 시간 포맷 문자열 생성 함수
+// KST 기준 시간 포맷 문자열 생성 함수
 function getKSTISOString() {
   const now = new Date();
   const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000); // UTC + 9
@@ -37,11 +37,25 @@ function loadRooms(filter = '전체') {
             .then(res => res.json())
             .then(messages => {
               messages.forEach(msg => {
-                const p = document.createElement('p');
-                const time = msg.send_time; //문자열 그대로 출력
-                p.textContent = `[${time}] ${msg.display_name}: ${msg.chat_content}`;
-                messageBox.appendChild(p);
+                const isMine = msg.user_key === userKey;
+
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message d-flex flex-column ' +
+                  (isMine ? 'align-items-end' : 'align-items-start');
+
+                const meta = document.createElement('div');
+                meta.className = 'chat-meta';
+                meta.textContent = `[${msg.send_time}] ${msg.display_name}`;
+
+                const bubble = document.createElement('div');
+                bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
+                bubble.textContent = msg.chat_content;
+
+                messageDiv.appendChild(meta);
+                messageDiv.appendChild(bubble);
+                messageBox.appendChild(messageDiv);
               });
+
               messageBox.scrollTop = messageBox.scrollHeight;
             });
         };
@@ -57,22 +71,35 @@ loadRooms();
 // 메시지 수신
 socket.on('chatMessage', (data) => {
   const messageBox = document.getElementById('messages');
-  const p = document.createElement('p');
 
+  // 한국 시간 포맷
   const time = new Date().toLocaleString('ko-KR', {
-  timeZone: 'Asia/Seoul',
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-  hour12: true //오전/오후 표기
-});
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true
+  });
 
+  const isMine = data.userName === userName;
 
-  p.textContent = `[${time}] ${data.userName || '익명'}: ${data.message}`;
-  messageBox.appendChild(p);
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'chat-message d-flex flex-column ' + (isMine ? 'align-items-end' : 'align-items-start');
+
+  const meta = document.createElement('div');
+  meta.className = 'chat-meta';
+  meta.textContent = `[${time}] ${data.userName}`;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
+  bubble.textContent = data.message;
+
+  messageDiv.appendChild(meta);
+  messageDiv.appendChild(bubble);
+  messageBox.appendChild(messageDiv);
   messageBox.scrollTop = messageBox.scrollHeight;
 });
 
@@ -87,12 +114,14 @@ function sendMessage() {
   const message = input.value.trim();
   if (!message || !currentRoomId) return;
 
+  // 서버로 메시지 전송
   socket.emit('chatMessage', {
     chatRoomId: currentRoomId,
     userName: String(userName),
     message
   });
 
+  // DB에 메시지 저장
   fetch('/chat/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -100,7 +129,7 @@ function sendMessage() {
       user_key: userKey,
       chat_key: currentRoomId,
       chat_content: message,
-      created_at: getKSTISOString() // 한국시간 문자열 직접 전송
+      created_at: getKSTISOString()
     })
   }).then(() => {
     input.value = '';

@@ -11303,3 +11303,34 @@ body.sidebar-toggled footer.sticky-footer {
   padding: 10px;
   font-size: 0.85rem;             /* 폰트도 작게 맞춰줌 */
 }
+
+.chat-message {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+}
+
+.chat-meta {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.chat-bubble {
+  padding: 10px 15px !important;
+  border-radius: 20px !important;
+  max-width: 70% !important;
+  word-break: break-word !important;
+  background-color: #f1f1f1 !important;
+  border: 1px solid #ddd;
+}
+
+.chat-left {
+  align-self: flex-start !important;
+  background-color: #f1f1f1 !important;
+}
+
+.chat-right {
+  align-self: flex-end !important;
+  background-color: #cce5ff !important;
+}

@@ -37,6 +37,7 @@ const itemDetailRoute = require('./routes/itemDetail_route');
 const itemListRoute = require('./routes/itemList_route');
 const mypageRoute = require('./routes/mypage_route');
 const myListRoute = require('./routes/myList_route');
+const auctionCloseRoute = require('./routes/auctionClose_route');
 
 app.use('/', loginRoute);
 app.use('/chat', chatRoute);
@@ -44,6 +45,7 @@ app.use('/item', itemDetailRoute);
 app.use('/items', itemListRoute);
 app.use('/mypage', mypageRoute);
 app.use('/mylist', myListRoute);
+app.use('/auction', auctionCloseRoute);
 
 //Socket.io 연결 로직 추가
 io.on('connection', (socket) => {
@@ -67,3 +69,12 @@ const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+//1분마다 자동호출
+setInterval(() => {
+  fetch('http://localhost:3000/auction/process-expired-auctions', {
+    method: 'POST'
+  }).then(res => res.json())
+    .then(json => console.log('[마감처리]', json))
+    .catch(err => console.error('❌ 마감 처리 실패:', err));
+}, 60000); // 1분마다
