@@ -6,23 +6,161 @@
   <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <link href="/css/sb-admin-2.min.css" rel="stylesheet">
   <style>
-    body { background-color: #f5f7fa; }
-    .chat-container { display: flex; height: 90vh; border: 1px solid #ddd; border-radius: 10px; background-color: white; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
-    .chat-sidebar { width: 30%; background-color: #f9fafc; padding: 1rem; border-right: 1px solid #eee; overflow-y: auto; }
-    .chat-main { width: 70%; display: flex; flex-direction: column; padding: 1rem; }
-    .chat-room-item { padding: 12px; background-color: #fff; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); cursor: pointer; transition: background-color 0.2s; }
-    .chat-room-item:hover { background-color: #e9f0fc; }
-    .chat-messages { flex-grow: 1; padding: 1rem; background-color: #fefefe; border: 1px solid #ddd; border-radius: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
-    .chat-input-group { display: flex; gap: 0.5rem; margin-top: 1rem; }
-    #messageInput { font-size: 1rem; }
-    #sendMessage { font-size: 0.9rem !important; padding: 0.5rem 1.2rem !important; }
-    .chat-wrapper { display: flex; flex-direction: column; }
-    .chat-left-wrapper { align-items: flex-start; }
-    .chat-right-wrapper { align-items: flex-end; }
-    .chat-bubble { max-width: 70%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.95rem; line-height: 1.5; word-break: break-word; white-space: pre-wrap; position: relative; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); }
-    .chat-left { background-color: #e0e0e0; color: #222; border-top-left-radius: 0; }
-    .chat-right { background-color: #007bff; color: white; border-top-right-radius: 0; }
-    .chat-meta { font-size: 0.75rem; color: #555; margin-bottom: 4px; }
+    body {
+  background-color: #eaf5ff;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.chat-container {
+  display: flex;
+  height: 90vh;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.chat-sidebar {
+  width: 30%;
+  background-color: #dff0ff;
+  padding: 1.2rem;
+  border-right: 1px solid #cbe2f5;
+}
+
+.chat-room-item {
+  padding: 14px 16px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  color: #222;
+  border: 1px solid #cbe2f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-room-item:hover {
+  background-color: #cfe9ff;
+}
+.chat-room-item .badge {
+  background-color: #ff5c00;
+  color: white;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+}
+
+.chat-main {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.4rem;
+  background-color: #f5faff;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1rem;
+}
+
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.chat-left-wrapper {
+  align-items: flex-start;
+}
+.chat-right-wrapper {
+  align-items: flex-end;
+}
+
+.chat-bubble {
+  max-width: 65%;
+  padding: 0.8rem 1.1rem;
+  border-radius: 20px;
+  font-size: 0.92rem;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.chat-left {
+  background-color: #e1edf7;
+  color: #222;
+}
+.chat-right {
+  background-color: #4db8ff;
+  color: white;
+}
+
+.chat-meta {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 3px;
+}
+
+.chat-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid #d3e6f7;
+}
+
+.chat-icons {
+  display: flex;
+  gap: 0.5rem;
+  color: #4db8ff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.chat-icons:hover {
+  color: #2b9cd6;
+}
+
+#messageInput {
+  flex-grow: 1;
+  border: 1px solid #bcdff5;
+  border-radius: 20px;
+  padding: 0.7rem 1rem;
+  background-color: #ffffff;
+  font-size: 0.95rem;
+}
+
+#messageInput::placeholder {
+  color: #aaa;
+}
+
+#sendMessage {
+  background: linear-gradient(135deg, #4db8ff, #329ee0);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  white-space: nowrap;  
+  line-height: 1;         
+  min-width: 64px;      
+}
+
+#sendMessage:hover {
+  background: linear-gradient(135deg, #329ee0, #4db8ff);
+  transform: scale(1.05);
+}
+
   </style>
 
   <script>
@@ -56,7 +194,7 @@
     </div>
   </div>
 
-  <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
   <!-- 스크립트 -->
   <script src="/js/includeAndSession.js"></script>
@@ -66,131 +204,118 @@
   <script src="/js/sb-admin-2.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-  //console.log('✅ 채팅 스크립트 로딩됨');
+    const socket = io();
+    let currentRoomId = null;
 
-  const socket = io();
-  let currentRoomId = null;
+    function getKSTISOString() {
+      const now = new Date();
+      const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+      return kst.toISOString().slice(0, 19).replace('T', ' ');
+    }
 
-  function getKSTISOString() {
-    const now = new Date();
-    const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-    return kst.toISOString().slice(0, 19).replace('T', ' ');
-  }
-
-  function loadRooms() {
-    fetch(`/chat/rooms`)
-      .then(res => res.json())
-      .then(rooms => {
-        const list = document.getElementById('roomList');
-        list.innerHTML = '';
-
-        rooms.forEach(room => {
-          const item = document.createElement('div');
-          item.className = 'chat-room-item';
-          item.textContent = `${room.title}`;
-          item.onclick = () => {
-            if (currentRoomId) {
-              socket.emit('leaveRoom', currentRoomId);
-              //console.log(`⬅️ leaveRoom: ${currentRoomId}`);
-            }
-
-            currentRoomId = room.chat_key;
-            socket.emit('joinRoom', currentRoomId);
-            //console.log(`🚪 joinRoom: ${currentRoomId}`);
-
-            document.getElementById('messages').innerHTML = '';
-
-            fetch(`/chat/messages/${room.chat_key}`)
-  .then(res => res.json())
-  .then(messages => {
-    messages.forEach(msg => {
-      if (msg.chat_content?.trim()) {  //내용이 비어있지 않을 때만
-        const isMine = msg.display_name === userName;
-        drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
-      }
-    });
-  });
-
-          };
-          list.appendChild(item);
+    function loadRooms() {
+      fetch(`/chat/rooms`)
+        .then(res => res.json())
+        .then(rooms => {
+          const list = document.getElementById('roomList');
+          list.innerHTML = '';
+          rooms.forEach(room => {
+            const item = document.createElement('div');
+            item.className = 'chat-room-item';
+            item.textContent = `${room.title}`;
+            item.onclick = () => {
+              if (currentRoomId) {
+                socket.emit('leaveRoom', currentRoomId);
+              }
+              currentRoomId = room.chat_key;
+              socket.emit('joinRoom', currentRoomId);
+              document.getElementById('messages').innerHTML = '';
+              fetch(`/chat/messages/${room.chat_key}`)
+                .then(res => res.json())
+                .then(messages => {
+                  messages.forEach(msg => {
+                    if (msg.chat_content?.trim()) {
+                      const isMine = msg.display_name === userName;
+                      drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
+                    }
+                  });
+                });
+            };
+            list.appendChild(item);
+          });
         });
+    }
+
+    function drawMessage(isMine, content, name, time) {
+      const messageBox = document.getElementById('messages');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'chat-wrapper ' + (isMine ? 'chat-right-wrapper' : 'chat-left-wrapper');
+
+      const meta = document.createElement('div');
+      meta.className = 'chat-meta';
+      meta.textContent = `[${time}] ${name}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
+      bubble.textContent = content;
+
+      wrapper.appendChild(meta);
+      wrapper.appendChild(bubble);
+      messageBox.appendChild(wrapper);
+      messageBox.scrollTop = messageBox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      if (!message || !currentRoomId) return;
+
+      const time = new Date().toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: true
       });
-  }
 
-  function drawMessage(isMine, content, name, time) {
-    const messageBox = document.getElementById('messages');
-    const wrapper = document.createElement('div');
-    wrapper.className = 'chat-wrapper ' + (isMine ? 'chat-right-wrapper' : 'chat-left-wrapper');
+      socket.emit('chatMessage', {
+        chatRoomId: currentRoomId,
+        userName: String(userName),
+        message
+      });
 
-    const meta = document.createElement('div');
-    meta.className = 'chat-meta';
-    meta.textContent = `[${time}] ${name}`;
+      drawMessage(true, message, userName, time);
 
-    const bubble = document.createElement('div');
-    bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
-    bubble.textContent = content;
+      fetch('/chat/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_key: userKey,
+          chat_key: currentRoomId,
+          chat_content: message,
+          created_at: getKSTISOString()
+        })
+      }).then(() => {
+        document.getElementById('messageInput').value = '';  // ✅ 확실히 초기화
+      });
+    }
 
-    wrapper.appendChild(meta);
-    wrapper.appendChild(bubble);
-    messageBox.appendChild(wrapper);
-    messageBox.scrollTop = messageBox.scrollHeight;
-  }
-
-  function sendMessage() {
-    const input = document.getElementById('messageInput');
-    const message = input.value.trim();
-    if (!message || !currentRoomId) return;
-
-    const time = new Date().toLocaleString('ko-KR', {
-      timeZone: 'Asia/Seoul',
-      year: 'numeric', month: 'numeric', day: 'numeric',
-      hour: 'numeric', minute: 'numeric', second: 'numeric',
-      hour12: true
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
     });
 
-    socket.emit('chatMessage', {
-      chatRoomId: currentRoomId,
-      userName: String(userName),
-      message
+    socket.on('chatMessage', (data) => {
+      if (data.userName === userName) return;
+      const now = new Date().toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: true
+      });
+      drawMessage(false, data.message, data.userName, now);
     });
-    //console.log(`📤 보낸 메시지: ${userName} → ${message}`);
 
-    drawMessage(true, message, userName, time);
-
-    fetch('/chat/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_key: userKey,
-        chat_key: currentRoomId,
-        chat_content: message,
-        created_at: getKSTISOString()
-      })
-    }).then(() => {
-      input.value = '';
-    });
-  }
-
-  document.getElementById('sendMessage').addEventListener('click', sendMessage);
-  document.getElementById('messageInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
-  });
-
-  socket.on('chatMessage', (data) => {
-  if (data.userName === userName) return; // 내 메시지는 무시
-  const now = new Date().toLocaleString('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric', month: 'numeric', day: 'numeric',
-    hour: 'numeric', minute: 'numeric', second: 'numeric',
-    hour12: true
-  });
-
-  //console.log(`📨 받은 메시지: ${data.userName} → ${data.message}`);
-  drawMessage(false, data.message, data.userName, now); // isMine = false로 고정
-});
-
-  loadRooms();
-</script>
-
+    loadRooms();
+  </script>
 </body>
 </html>
