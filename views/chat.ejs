@@ -66,112 +66,128 @@
   <script src="/js/sb-admin-2.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
-    let currentRoomId = null;
+  //console.log('✅ 채팅 스크립트 로딩됨');
 
-    function getKSTISOString() {
-      const now = new Date();
-      const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-      return kst.toISOString().slice(0, 19).replace('T', ' ');
-    }
+  const socket = io();
+  let currentRoomId = null;
 
-    function loadRooms() {
-      fetch(`/chat/rooms`)
-        .then(res => res.json())
-        .then(rooms => {
-          const list = document.getElementById('roomList');
-          list.innerHTML = '';
-          rooms.forEach(room => {
-            const item = document.createElement('div');
-            item.className = 'chat-room-item';
-            item.textContent = `${room.title}`;
-            item.onclick = () => {
-              currentRoomId = room.chat_key;
-              document.getElementById('messages').innerHTML = '';
-              fetch(`/chat/messages/${room.chat_key}`)
-                .then(res => res.json())
-                .then(messages => {
-                  messages.forEach(msg => {
-                    const isMine = msg.display_name === userName;
-                    drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
-                  });
+  function getKSTISOString() {
+    const now = new Date();
+    const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    return kst.toISOString().slice(0, 19).replace('T', ' ');
+  }
+
+  function loadRooms() {
+    fetch(`/chat/rooms`)
+      .then(res => res.json())
+      .then(rooms => {
+        const list = document.getElementById('roomList');
+        list.innerHTML = '';
+
+        rooms.forEach(room => {
+          const item = document.createElement('div');
+          item.className = 'chat-room-item';
+          item.textContent = `${room.title}`;
+          item.onclick = () => {
+            if (currentRoomId) {
+              socket.emit('leaveRoom', currentRoomId);
+              //console.log(`⬅️ leaveRoom: ${currentRoomId}`);
+            }
+
+            currentRoomId = room.chat_key;
+            socket.emit('joinRoom', currentRoomId);
+            //console.log(`🚪 joinRoom: ${currentRoomId}`);
+
+            document.getElementById('messages').innerHTML = '';
+
+            fetch(`/chat/messages/${room.chat_key}`)
+              .then(res => res.json())
+              .then(messages => {
+                messages.forEach(msg => {
+                  const isMine = msg.display_name === userName;
+                  drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
                 });
-            };
-            list.appendChild(item);
-          });
+              });
+          };
+          list.appendChild(item);
         });
-    }
-
-    function drawMessage(isMine, content, name, time) {
-      const messageBox = document.getElementById('messages');
-      const wrapper = document.createElement('div');
-      wrapper.className = 'chat-wrapper ' + (isMine ? 'chat-right-wrapper' : 'chat-left-wrapper');
-
-      const meta = document.createElement('div');
-      meta.className = 'chat-meta';
-      meta.textContent = `[${time}] ${name}`;
-
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
-      bubble.textContent = content;
-
-      wrapper.appendChild(meta);
-      wrapper.appendChild(bubble);
-      messageBox.appendChild(wrapper);
-      messageBox.scrollTop = messageBox.scrollHeight;
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('messageInput');
-      const message = input.value.trim();
-      if (!message || !currentRoomId) return;
-
-      const time = new Date().toLocaleString('ko-KR', {
-        timeZone: 'Asia/Seoul',
-        year: 'numeric', month: 'numeric', day: 'numeric',
-        hour: 'numeric', minute: 'numeric', second: 'numeric',
-        hour12: true
       });
+  }
 
-      socket.emit('chatMessage', {
-        chatRoomId: currentRoomId,
-        userName: String(userName),
-        message
-      });
+  function drawMessage(isMine, content, name, time) {
+    const messageBox = document.getElementById('messages');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'chat-wrapper ' + (isMine ? 'chat-right-wrapper' : 'chat-left-wrapper');
 
-      drawMessage(true, message, userName, time);
+    const meta = document.createElement('div');
+    meta.className = 'chat-meta';
+    meta.textContent = `[${time}] ${name}`;
 
-      fetch('/chat/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_key: userKey,
-          chat_key: currentRoomId,
-          chat_content: message,
-          created_at: getKSTISOString()
-        })
-      }).then(() => {
-        input.value = '';
-      });
-    }
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
+    bubble.textContent = content;
 
-    document.getElementById('sendMessage').addEventListener('click', sendMessage);
-    document.getElementById('messageInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendMessage();
+    wrapper.appendChild(meta);
+    wrapper.appendChild(bubble);
+    messageBox.appendChild(wrapper);
+    messageBox.scrollTop = messageBox.scrollHeight;
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    if (!message || !currentRoomId) return;
+
+    const time = new Date().toLocaleString('ko-KR', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric', month: 'numeric', day: 'numeric',
+      hour: 'numeric', minute: 'numeric', second: 'numeric',
+      hour12: true
     });
 
-    socket.on('chatMessage', (data) => {
-      const now = new Date().toLocaleString('ko-KR', {
-        timeZone: 'Asia/Seoul',
-        year: 'numeric', month: 'numeric', day: 'numeric',
-        hour: 'numeric', minute: 'numeric', second: 'numeric',
-        hour12: true
-      });
-
-      drawMessage(data.userName === userName, data.message, data.userName, now);
+    socket.emit('chatMessage', {
+      chatRoomId: currentRoomId,
+      userName: String(userName),
+      message
     });
+    //console.log(`📤 보낸 메시지: ${userName} → ${message}`);
 
-    loadRooms();
-  </script>
+    drawMessage(true, message, userName, time);
+
+    fetch('/chat/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_key: userKey,
+        chat_key: currentRoomId,
+        chat_content: message,
+        created_at: getKSTISOString()
+      })
+    }).then(() => {
+      input.value = '';
+    });
+  }
+
+  document.getElementById('sendMessage').addEventListener('click', sendMessage);
+  document.getElementById('messageInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  socket.on('chatMessage', (data) => {
+  if (data.userName === userName) return; // 내 메시지는 무시
+  const now = new Date().toLocaleString('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: 'numeric', minute: 'numeric', second: 'numeric',
+    hour12: true
+  });
+
+  //console.log(`📨 받은 메시지: ${data.userName} → ${data.message}`);
+  drawMessage(false, data.message, data.userName, now); // isMine = false로 고정
+});
+
+  loadRooms();
+</script>
+
 </body>
 </html>

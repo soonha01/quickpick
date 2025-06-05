@@ -1,19 +1,18 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const http = require('http');                //추가
-const socketIo = require('socket.io');       //추가
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app = express();
-const server = http.createServer(app);       //기존 app → server로 변경
-const io = socketIo(server);                 //소켓 서버 생성
+const server = http.createServer(app);
+const io = socketIo(server);
 
-
-// ✅ 뷰 엔진 설정 (이 두 줄 추가!)
+// ✅ 뷰 엔진 설정
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));//추가
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 세션 설정
 app.use(session({
@@ -47,20 +46,29 @@ app.use('/mypage', mypageRoute);
 app.use('/mylist', myListRoute);
 app.use('/auction', auctionCloseRoute);
 
-//Socket.io 연결 로직 추가
+// ✅ Socket.io 연결 로직 + 디버깅 로그 추가
 io.on('connection', (socket) => {
+  //console.log('✅ 사용자 접속됨:', socket.id);
 
   socket.on('joinRoom', (chatRoomId) => {
     socket.join(chatRoomId);
+    //console.log(`🚪 [${socket.id}] 방 입장: ${chatRoomId}`);
+  });
+
+  socket.on('leaveRoom', (chatRoomId) => {
+    socket.leave(chatRoomId);
+    //console.log(`⬅️ [${socket.id}] 방 나감: ${chatRoomId}`);
   });
 
   socket.on('chatMessage', (data) => {
     const { chatRoomId, userName, message } = data;
+    //console.log(`💬 [${socket.id}] ${userName} → ${message} (방: ${chatRoomId})`);
 
-    // 모든 사용자에게 메시지 전송
     io.to(chatRoomId).emit('chatMessage', { userName, message });
   });
+
   socket.on('disconnect', () => {
+    //console.log('❌ 연결 종료:', socket.id);
   });
 });
 
@@ -70,11 +78,11 @@ server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-//1분마다 자동호출
+// 1분마다 자동 마감 처리 호출
 setInterval(() => {
   fetch('http://localhost:3000/auction/process-expired-auctions', {
     method: 'POST'
   }).then(res => res.json())
     .then(json => console.log('[마감처리]', json))
     .catch(err => console.error('❌ 마감 처리 실패:', err));
-}, 60000); // 1분마다
+}, 60000); // 1분

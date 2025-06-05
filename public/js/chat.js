@@ -1,3 +1,5 @@
+console.log('✅ chat.js 로딩됨');
+
 const socket = io();
 let currentRoomId = null;
 
@@ -20,8 +22,16 @@ function loadRooms() {
         div.textContent = `${room.title} 채팅방`;
 
         div.onclick = () => {
+          // ✅ 기존 방 나가기
+          if (currentRoomId) {
+            socket.emit('leaveRoom', currentRoomId);
+            console.log(`⬅️ leaveRoom: ${currentRoomId}`);
+          }
+
+          // ✅ 새 방 입장
           currentRoomId = room.chat_key;
           socket.emit('joinRoom', currentRoomId);
+          console.log(`🚪 joinRoom: ${currentRoomId}`);
 
           const messageBox = document.getElementById('messages');
           messageBox.innerHTML = '';
@@ -43,7 +53,10 @@ function loadRooms() {
 
 loadRooms();
 
+// ✅ 서버로부터 실시간 메시지 수신
 socket.on('chatMessage', (data) => {
+  if (!currentRoomId) return;
+
   const now = new Date().toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
     year: 'numeric',
@@ -55,9 +68,11 @@ socket.on('chatMessage', (data) => {
     hour12: true
   });
 
+  console.log(`📨 받은 메시지: ${data.userName} → ${data.message}`);
   drawMessage(data.userName === userName, data.message, data.userName, now);
 });
 
+// ✅ 메시지 보내기
 document.getElementById('sendMessage').addEventListener('click', sendMessage);
 document.getElementById('messageInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
@@ -68,12 +83,29 @@ function sendMessage() {
   const message = input.value.trim();
   if (!message || !currentRoomId) return;
 
+  const time = new Date().toLocaleString('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true
+  });
+
+  // 실시간 전송
   socket.emit('chatMessage', {
     chatRoomId: currentRoomId,
     userName: String(userName),
     message
   });
+  console.log(`📤 보낸 메시지: ${userName} → ${message}`);
 
+  // 내 메시지는 바로 렌더링
+  drawMessage(true, message, userName, time);
+
+  // DB 저장
   fetch('/chat/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -88,6 +120,7 @@ function sendMessage() {
   });
 }
 
+// ✅ 메시지 UI 생성
 function drawMessage(isMine, content, name, time) {
   const messageBox = document.getElementById('messages');
 
@@ -100,4 +133,5 @@ function drawMessage(isMine, content, name, time) {
 
   wrapper.appendChild(bubble);
   messageBox.appendChild(wrapper);
+  messageBox.scrollTop = messageBox.scrollHeight;
 }
