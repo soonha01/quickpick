@@ -60,6 +60,8 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     if (res.ok && data.success) {
       alert('회원 정보가 수정되었습니다.');
 
+      window.location.reload();
+
       document.getElementById('viewDisplayName').textContent = display_name;
       document.getElementById('viewPhoneNumber').textContent = phone_number;
       
