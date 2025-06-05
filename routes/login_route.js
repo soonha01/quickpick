@@ -108,6 +108,17 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// 로그아웃 처리
+router.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('로그아웃 오류:', err);
+      return res.status(500).send('Logout failed');
+    }
+    res.redirect('/login'); // 로그인 페이지로 이동
+  });
+});
+
 
 
 

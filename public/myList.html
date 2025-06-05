@@ -1,50 +1,243 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>나의 경매목록</title>
-    <!-- CSS -->
-    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <title>나의 경매목록</title>
 
-    <!-- JS -->
-    <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="/js/sb-admin-2.min.js"></script>
-    <script src="/js/mypage.js"></script>
+  <!-- CSS -->
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
+  <!-- JS (jQuery, Bootstrap 등) -->
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/js/sb-admin-2.min.js"></script>
 </head>
 <body id="page-top">
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-        <!-- 사이드 bar -->
-        <div id="sidebar-container"></div>
-        <!-- End of Sidebar -->
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <!-- Main Content -->
-            <div id="content">
+  <div id="wrapper">
+    <div id="sidebar-container"></div>
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <div id="topbar-container"></div>
+        <div class="container-fluid">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">나의 경매 목록</h1>
+          </div>
+          <div class="mb-3">
+            <button class="btn" id="showAllBtn" data-hash="">전체</button>
+            <button class="btn" id="showBidBtn" data-hash="bids">입찰 내역</button>
+            <button class="btn" id="showSellBtn" data-hash="sells">판매 내역</button>
+          </div>
 
-                <!-- 탑 bar -->
-                <div id="topbar-container"></div>
-                <div class="container-fluid">
-                    <!-- 여기부터 개발 -->
-                    <!-- 화면 왼쪽 상단 페이지명 -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">마이페이지</h1>
-                    </div>
-
-                </div>   
+          <!-- 입찰 내역 섹션 -->
+          <div id="bidSection" class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">입찰 내역</h6>
             </div>
-            <div id="footer-container"></div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>제목</th>
+                      <th>현재가</th>
+                      <th>입찰가</th>
+                      <th>상태</th>
+                      <th>이동</th>
+                    </tr>
+                  </thead>
+                  <tbody id="auctionBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 판매 내역 섹션 -->
+          <div id="sellSection" class="card shadow mb-4" style="display: none;">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">판매 내역</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>제목</th>
+                      <th>시작가</th>
+                      <th>최종가</th>
+                      <th>상태</th>
+                      <th>이동</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sellBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        <!-- End of Content Wrapper -->
-
+      </div>
+      <div id="footer-container"></div>
     </div>
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>    
+  </div>
 
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- includeAndSession.js -->
+  <script src="/js/includeAndSession.js"></script>
+  <script>
+    $(function () {
+      // 탭 버튼 초기 스타일
+      $('#showAllBtn, #showBidBtn, #showSellBtn').addClass('btn btn-secondary');
+
+      // 해시값 읽어서 섹션 보여주기
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'bids') {
+        showSection('bid');
+      } else if (hash === 'sells') {
+        showSection('sell');
+      } else {
+        showSection('bid');
+        history.replaceState(null, '', window.location.pathname);
+      }
+
+      // 탭 버튼 클릭 시 해시 변경 및 섹션 전환
+      $('#showAllBtn, #showBidBtn, #showSellBtn').click(function () {
+        const targetHash = $(this).data('hash');
+        if (targetHash) {
+          window.location.hash = targetHash;
+        } else {
+          history.replaceState(null, '', window.location.pathname);
+        }
+        const type = (targetHash === '') ? 'all' : (targetHash === 'bids' ? 'bid' : 'sell');
+        showSection(type);
+      });
+
+      function showSection(type) {
+        $('#showAllBtn, #showBidBtn, #showSellBtn').removeClass('btn-primary').addClass('btn-secondary');
+        if (type === 'all')  $('#showAllBtn').removeClass('btn-secondary').addClass('btn-primary');
+        if (type === 'bid')  $('#showBidBtn').removeClass('btn-secondary').addClass('btn-primary');
+        if (type === 'sell') $('#showSellBtn').removeClass('btn-secondary').addClass('btn-primary');
+
+        $('#bidSection').toggle(type !== 'sell');
+        $('#sellSection').toggle(type !== 'bid');
+
+        if (type === 'all' || type === 'bid')   loadBidData();
+        if (type === 'all' || type === 'sell')  loadSellData();
+      }
+
+      function loadBidData() {
+        $.ajax({
+          url: 'mylist/bids',   // 절대경로로 수정
+          method: 'GET',
+          dataType: 'json',
+          success: function (res) {
+            const tbody = $('#auctionBody').empty();
+            const bids = res.bids || [];
+            if (!bids.length) {
+              tbody.append('<tr><td colspan="5" class="text-center">입찰한 내역이 없습니다.</td></tr>');
+              return;
+            }
+            bids.forEach(item => {
+              const title = item.title ?? '';
+              const currentPriceNum = typeof item.current_price === 'number' ? item.current_price : 0;
+              const bidPriceNum = typeof item.bid_price === 'number' ? item.bid_price : 0;
+              const status = item.status ?? '';
+
+              const bidPriceDisplay = (status === '마감')
+                ? currentPriceNum.toLocaleString()
+                : bidPriceNum.toLocaleString();
+              const currentPriceDisplay = currentPriceNum.toLocaleString();
+
+              // 이동할 URL: 반드시 /item/itemDetail?id=아이템ID 형태
+              const detailUrl = item.id
+                ? `/item/itemDetail?id=${item.id}`
+                : '#';
+
+              tbody.append(`
+                <tr>
+                  <td>${title}</td>
+                  <td>${currentPriceDisplay} 원</td>
+                  <td>${bidPriceDisplay} 원</td>
+                  <td>${status}</td>
+                  <td>
+                    <button
+                      class="btn btn-sm btn-primary move-btn"
+                      data-url="${detailUrl}"
+                    >이동하기</button>
+                  </td>
+                </tr>
+              `);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error('입찰 에러:', status, error, xhr.responseText);
+            $('#auctionBody').html('<tr><td colspan="5" class="text-center">입찰 데이터를 불러오는 중 오류가 발생했습니다.</td></tr>');
+          }
+        });
+      }
+
+      function loadSellData() {
+        $.ajax({
+          url: 'mylist/sells',   // 절대경로로 수정
+          method: 'GET',
+          dataType: 'json',
+          success: function (res) {
+            const tbody = $('#sellBody').empty();
+            const sells = res.sells || [];
+            if (!sells.length) {
+              tbody.append('<tr><td colspan="5" class="text-center">판매한 내역이 없습니다.</td></tr>');
+              return;
+            }
+            sells.forEach(item => {
+              const title = item.title ?? '';
+              const startPrice = typeof item.start_price === 'number' ? item.start_price : 0;
+              const finalPrice = typeof item.final_price === 'number' ? item.final_price : 0;
+              const status = item.status ?? '';
+
+              const startPriceDisplay = startPrice.toLocaleString();
+              const finalPriceDisplay = finalPrice.toLocaleString();
+
+              // 이동할 URL: 반드시 /item/itemDetail?id=아이템ID 형태
+              const detailUrl = item.id
+                ? `/item/itemDetail?id=${item.id}`
+                : '#';
+
+              tbody.append(`
+                <tr>
+                  <td>${title}</td>
+                  <td>${startPriceDisplay} 원</td>
+                  <td>${finalPriceDisplay} 원</td>
+                  <td>${status}</td>
+                  <td>
+                    <button
+                      class="btn btn-sm btn-primary move-btn"
+                      data-url="${detailUrl}"
+                    >이동하기</button>
+                  </td>
+                </tr>
+              `);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error('판매 에러:', status, error, xhr.responseText);
+            $('#sellBody').html('<tr><td colspan="5" class="text-center">판매 데이터를 불러오는 중 오류가 발생했습니다.</td></tr>');
+          }
+        });
+      }
+
+      $('#auctionBody, #sellBody')
+        .off('click', '.move-btn')
+        .on('click', '.move-btn', function() {
+          const url = $(this).data('url');
+          if (url && url !== '#') {
+            window.location.href = url;
+          }
+        });
+    });
+    
+  </script>
 </body>
-<script src="/js/includeAndSession.js"></script>
 </html>
