@@ -28,6 +28,8 @@ Promise.all(
     .then(res => res.json())
     .then(data => {
       const userNameElement = document.getElementById('userName');
+      const profileImageElement = document.getElementById('topbarProfileImage');
+
       if (!userNameElement) {
         console.warn('❗ userName 요소를 찾지 못했습니다.');
         return;
@@ -35,6 +37,10 @@ Promise.all(
 
       if (data.user && data.user.display_name) {
         userNameElement.textContent = data.user.display_name;
+
+        if (profileImageElement) {
+          profileImageElement.src = data.user.profile_image || '/uploads/user_default.png';
+        }
       } else {
         userNameElement.innerHTML = '<button type="button">로그인</button>';
       }
