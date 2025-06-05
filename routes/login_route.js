@@ -40,7 +40,8 @@ router.post('/login', async (req, res) => {
         user_key: user.user_key,
         login_id: user.login_id,
         display_name: user.display_name,
-        phone_number: user.phone_number //여기 추가
+        phone_number: user.phone_number,
+        profile_image: user.profile_image  //여기 추가
       };
 
       res.json({ success: true, user });

@@ -9,16 +9,15 @@ async function loadUserInfo() {
   console.log(data); 
   if (data.user) {
     const { display_name, phone_number, profile_image } = data.user;
-
+    
     // 보기 모드 표시
     document.getElementById('viewDisplayName').textContent = display_name;
     document.getElementById('viewPhoneNumber').textContent = phone_number;
-
+    document.getElementById('viewProfileImage').src = profile_image || '/uploads/user_default.png';
     // 수정 모드 기본값 설정
     document.getElementById('display_name').value = display_name;
     document.getElementById('phone_number').value = phone_number;
-
-    document.getElementById('profileImageView').src = profile_image || '/images/default-profile.png';
+    document.getElementById('profileImageView').src = profile_image || '/uploads/user_default.png';
   }
 }
 
@@ -63,6 +62,7 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
 
       document.getElementById('viewDisplayName').textContent = display_name;
       document.getElementById('viewPhoneNumber').textContent = phone_number;
+      
 
       // 닉네임 변경 반영
       const userNameElement = document.getElementById('userName');

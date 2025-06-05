@@ -8,6 +8,23 @@ router.get('/mypage', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/mypage.html'));
 });
 
+router.get('/session-user', (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: '로그인 필요' });
+  }
+
+  const { display_name, phone_number, profile_image } = req.session.user;
+
+  return res.json({
+    success: true,
+    user: {
+      display_name,
+      phone_number,
+      profile_image
+    }
+  });
+});
+
 // 사용자 정보 조회
 router.get('/userinfo', async (req, res) => {
   if (!req.session.user) {
