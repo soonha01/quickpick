@@ -6,67 +6,29 @@
   <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <link href="/css/sb-admin-2.min.css" rel="stylesheet">
   <style>
-    .chat-container {
-      display: flex;
-      height: 600px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .chat-sidebar {
-      width: 30%;
-      border-right: 1px solid #ddd;
-      background-color: #f8f9fc;
-      padding: 1rem;
-      overflow-y: auto;
-    }
-    .chat-main {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      margin-left: auto;
-    }
-    .chat-messages {
-      flex-grow: 1;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 1rem;
-      overflow-y: auto;
-      margin-bottom: 1rem;
-      background-color: white;
-    }
-    .chat-input-group {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .chat-room-item {
-      padding: 10px;
-      border-radius: 5px;
-      background-color: white;
-      margin-bottom: 5px;
-      cursor: pointer;
-    }
-    .chat-room-item:hover {
-      background-color: #e2e6ea;
-    }
-    .chat-filters {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    #sendMessage {
-      font-size: 0.8rem !important;
-      padding: 0.4rem 0.6rem;
-    }
+    body { background-color: #f5f7fa; }
+    .chat-container { display: flex; height: 90vh; border: 1px solid #ddd; border-radius: 10px; background-color: white; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+    .chat-sidebar { width: 30%; background-color: #f9fafc; padding: 1rem; border-right: 1px solid #eee; overflow-y: auto; }
+    .chat-main { width: 70%; display: flex; flex-direction: column; padding: 1rem; }
+    .chat-room-item { padding: 12px; background-color: #fff; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); cursor: pointer; transition: background-color 0.2s; }
+    .chat-room-item:hover { background-color: #e9f0fc; }
+    .chat-messages { flex-grow: 1; padding: 1rem; background-color: #fefefe; border: 1px solid #ddd; border-radius: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
+    .chat-input-group { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    #messageInput { font-size: 1rem; }
+    #sendMessage { font-size: 0.9rem !important; padding: 0.5rem 1.2rem !important; }
+    .chat-wrapper { display: flex; flex-direction: column; }
+    .chat-left-wrapper { align-items: flex-start; }
+    .chat-right-wrapper { align-items: flex-end; }
+    .chat-bubble { max-width: 70%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.95rem; line-height: 1.5; word-break: break-word; white-space: pre-wrap; position: relative; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); }
+    .chat-left { background-color: #e0e0e0; color: #222; border-top-left-radius: 0; }
+    .chat-right { background-color: #007bff; color: white; border-top-right-radius: 0; }
+    .chat-meta { font-size: 0.75rem; color: #555; margin-bottom: 4px; }
   </style>
 
-  <!-- 사용자 정보 삽입 -->
   <script>
     const userKey = <%= userKey %>;
     const userName = "<%= userName %>";
   </script>
-
 </head>
 
 <body id="page-top">
@@ -76,13 +38,6 @@
       <div id="content">
         <div id="topbar-container"></div>
         <div class="container-fluid">
-
-          <div class="chat-filters">
-            <button class="btn btn-outline-secondary btn-sm" id="filter-all">전체</button>
-            <button class="btn btn-outline-primary btn-sm" id="filter-bid">낙찰</button>
-            <button class="btn btn-outline-success btn-sm" id="filter-done">거래완료</button>
-          </div>
-
           <div class="chat-container">
             <div class="chat-sidebar">
               <div id="roomList"></div>
@@ -103,12 +58,120 @@
 
   <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
+  <!-- 스크립트 -->
   <script src="/js/includeAndSession.js"></script>
   <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="/js/sb-admin-2.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/chat.js"></script>
+  <script>
+    const socket = io();
+    let currentRoomId = null;
+
+    function getKSTISOString() {
+      const now = new Date();
+      const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+      return kst.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    function loadRooms() {
+      fetch(`/chat/rooms`)
+        .then(res => res.json())
+        .then(rooms => {
+          const list = document.getElementById('roomList');
+          list.innerHTML = '';
+          rooms.forEach(room => {
+            const item = document.createElement('div');
+            item.className = 'chat-room-item';
+            item.textContent = `${room.title}`;
+            item.onclick = () => {
+              currentRoomId = room.chat_key;
+              document.getElementById('messages').innerHTML = '';
+              fetch(`/chat/messages/${room.chat_key}`)
+                .then(res => res.json())
+                .then(messages => {
+                  messages.forEach(msg => {
+                    const isMine = msg.display_name === userName;
+                    drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
+                  });
+                });
+            };
+            list.appendChild(item);
+          });
+        });
+    }
+
+    function drawMessage(isMine, content, name, time) {
+      const messageBox = document.getElementById('messages');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'chat-wrapper ' + (isMine ? 'chat-right-wrapper' : 'chat-left-wrapper');
+
+      const meta = document.createElement('div');
+      meta.className = 'chat-meta';
+      meta.textContent = `[${time}] ${name}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
+      bubble.textContent = content;
+
+      wrapper.appendChild(meta);
+      wrapper.appendChild(bubble);
+      messageBox.appendChild(wrapper);
+      messageBox.scrollTop = messageBox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      if (!message || !currentRoomId) return;
+
+      const time = new Date().toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: true
+      });
+
+      socket.emit('chatMessage', {
+        chatRoomId: currentRoomId,
+        userName: String(userName),
+        message
+      });
+
+      drawMessage(true, message, userName, time);
+
+      fetch('/chat/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_key: userKey,
+          chat_key: currentRoomId,
+          chat_content: message,
+          created_at: getKSTISOString()
+        })
+      }).then(() => {
+        input.value = '';
+      });
+    }
+
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    socket.on('chatMessage', (data) => {
+      const now = new Date().toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: true
+      });
+
+      drawMessage(data.userName === userName, data.message, data.userName, now);
+    });
+
+    loadRooms();
+  </script>
 </body>
 </html>

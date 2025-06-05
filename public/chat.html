@@ -6,24 +6,30 @@
   <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <link href="/css/sb-admin-2.min.css?v=3" rel="stylesheet">
   <style>
+    body {
+      background-color: #f4f6f9;
+    }
+
     .chat-container {
       display: flex;
-      height: 600px;
+      height: 90vh;
       border: 1px solid #ccc;
       border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       overflow: hidden;
     }
 
     .chat-sidebar {
-      width: 30%;
-      border-right: 1px solid #ddd;
-      background-color: #f8f9fc;
+      width: 25%;
+      border-right: 1px solid #eee;
+      background-color: #f9fafc;
       padding: 1rem;
       overflow-y: auto;
     }
 
     .chat-main {
-      width: 70%;
+      width: 75%;
       display: flex;
       flex-direction: column;
       padding: 1rem;
@@ -31,133 +37,110 @@
 
     .chat-messages {
       flex-grow: 1;
-      border: 1px solid #ddd;
-      border-radius: 10px;
       padding: 1rem;
       overflow-y: auto;
-      margin-bottom: 1rem;
-      background-color: #ffffff;
+      background-color: #fefefe;
+      border-radius: 10px;
+      border: 1px solid #ddd;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
 
     .chat-input-group {
       display: flex;
       gap: 0.5rem;
+      margin-top: 1rem;
     }
 
     .chat-room-item {
-      padding: 10px;
-      border-radius: 5px;
+      padding: 10px 12px;
+      border-radius: 8px;
       background-color: white;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: background 0.2s;
     }
 
     .chat-room-item:hover {
-      background-color: #e2e6ea;
-    }
-
-    .chat-filters {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+      background-color: #e8f0fe;
     }
 
     #sendMessage {
-      font-size: 0.85rem !important;
-      padding: 0.4rem 1.2rem !important;
-      min-width: 80px !important;
-      height: 42px !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 0.9rem !important;
+      padding: 0.5rem 1.4rem !important;
     }
 
     .chat-bubble {
-      padding: 10px 15px;
-      border-radius: 18px;
+      max-width: 70%;
+      padding: 0.75rem 1rem;
+      border-radius: 16px;
       font-size: 0.95rem;
-      line-height: 1.4;
-      max-width: 75%;
+      line-height: 1.5;
       word-break: break-word;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       white-space: pre-wrap;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
     .chat-left {
-      background-color: #f1f3f5;
       align-self: flex-start;
+      background-color: #f1f3f5;
       border-top-left-radius: 0;
-      margin-right: auto;
-      margin-left: 10px;
     }
 
     .chat-right {
-      background-color: #d0ebff;
       align-self: flex-end;
+      background-color: #d0ebff;
       border-top-right-radius: 0;
-      margin-left: auto;
-      margin-right: 10px;
     }
 
     .chat-meta {
       font-size: 0.75rem;
-      color: #6c757d;
-      margin-bottom: 5px;
-      text-align: left;
+      color: #555;
+      margin-bottom: 4px;
     }
 
-    .status-badge {
-      margin-left: 5px;
-      font-size: 0.7rem;
+    .chat-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-left-wrapper {
+      align-items: flex-start;
+    }
+
+    .chat-right-wrapper {
+      align-items: flex-end;
+    }
+
+    input#messageInput {
+      font-size: 0.95rem;
     }
   </style>
 </head>
 <body>
-  <div id="wrapper">
-    <div id="sidebar-container"></div>
-    <div id="content-wrapper" class="d-flex flex-column">
-      <div id="content">
-        <div id="topbar-container"></div>
-        <div class="container-fluid">
-          <div class="chat-filters">
-            <button class="btn btn-outline-secondary btn-sm" id="filter-all">전체</button>
-            <button class="btn btn-outline-primary btn-sm" id="filter-bid">낙찰</button>
-            <button class="btn btn-outline-success btn-sm" id="filter-done">거래완료</button>
-          </div>
+  <div class="container mt-4">
+    <div class="chat-container">
+      <div class="chat-sidebar">
+        <div id="roomList"></div>
+      </div>
 
-          <div class="chat-container">
-            <div class="chat-sidebar">
-              <div id="roomList"></div>
-            </div>
-
-            <div class="chat-main">
-              <div id="messages" class="chat-messages"></div>
-              <div class="chat-input-group">
-                <input type="text" id="messageInput" class="form-control" placeholder="메시지를 입력하세요">
-                <button class="btn btn-primary" id="sendMessage">전송</button>
-              </div>
-            </div>
-          </div>
+      <div class="chat-main">
+        <div id="messages" class="chat-messages"></div>
+        <div class="chat-input-group">
+          <input type="text" id="messageInput" class="form-control" placeholder="메시지를 입력하세요">
+          <button class="btn btn-primary" id="sendMessage">전송</button>
         </div>
-        <div id="footer-container"></div>
       </div>
     </div>
   </div>
-
-  <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
   <!-- JS -->
   <script src="/js/includeAndSession.js"></script>
   <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-  <script src="/js/sb-admin-2.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
@@ -165,63 +148,35 @@
     const userKey = Number(localStorage.getItem('user_key'));
     const userName = localStorage.getItem('display_name');
 
-    document.getElementById('filter-all').onclick = () => loadRooms('전체');
-    document.getElementById('filter-bid').onclick = () => loadRooms('낙찰');
-    document.getElementById('filter-done').onclick = () => loadRooms('거래완료');
-
     function getKSTISOString() {
       const now = new Date();
       const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
       return kst.toISOString().slice(0, 19).replace('T', ' ');
     }
 
-    function loadRooms(filter = '전체') {
+    function loadRooms() {
       fetch(`/chat/rooms`)
         .then(res => res.json())
         .then(rooms => {
           const list = document.getElementById('roomList');
           list.innerHTML = '';
-
           rooms.forEach(room => {
-            const status = room.status || '진행중';
-
-            if (filter === '낙찰' && status !== '마감') return;
-            if (filter === '거래완료' && status !== '거래완료') return;
-
-            const div = document.createElement('div');
-            div.className = 'chat-room-item';
-
-            const titleSpan = document.createElement('span');
-            titleSpan.textContent = `${room.title} 채팅방`;
-
-            const badge = document.createElement('span');
-            badge.className = 'badge badge-pill status-badge ' + (
-              status === '마감' ? 'badge-primary' :
-              status === '거래완료' ? 'badge-success' : 'badge-secondary'
-            );
-            badge.textContent = status;
-
-            div.appendChild(titleSpan);
-            div.appendChild(badge);
-
-            div.onclick = () => {
+            const item = document.createElement('div');
+            item.className = 'chat-room-item';
+            item.textContent = `${room.title}`;
+            item.onclick = () => {
               currentRoomId = room.chat_key;
-              socket.emit('joinRoom', currentRoomId);
-
-              const messageBox = document.getElementById('messages');
-              messageBox.innerHTML = '';
-
+              document.getElementById('messages').innerHTML = '';
               fetch(`/chat/messages/${room.chat_key}`)
                 .then(res => res.json())
                 .then(messages => {
-                  messages.forEach(msg =>
-                    drawMessage(msg.display_name === userName, msg.chat_content, msg.display_name, msg.send_time)
-                  );
-                  messageBox.scrollTop = messageBox.scrollHeight;
+                  messages.forEach(msg => {
+                    const isMine = msg.user_name === userName;
+                    drawMessage(isMine, msg.chat_content, msg.user_name, msg.chat_created_at);
+                  });
                 });
             };
-
-            list.appendChild(div);
+            list.appendChild(item);
           });
         });
     }
@@ -235,7 +190,6 @@
         hour: 'numeric', minute: 'numeric', second: 'numeric',
         hour12: true
       });
-
       drawMessage(data.userName === userName, data.message, data.userName, now);
     });
 
@@ -273,13 +227,19 @@
       const messageBox = document.getElementById('messages');
 
       const wrapper = document.createElement('div');
-      wrapper.className = 'd-flex mb-2 ' + (isMine ? 'justify-content-end' : 'justify-content-start');
+      wrapper.className = 'chat-wrapper ' + (isMine ? 'chat-right-wrapper' : 'chat-left-wrapper');
+
+      const meta = document.createElement('div');
+      meta.className = 'chat-meta';
+      meta.textContent = `[${time}] ${name}`;
 
       const bubble = document.createElement('div');
       bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
-      bubble.innerHTML = `<div class="chat-meta">[${time}] ${name}</div><div>${content}</div>`;
+      bubble.textContent = content;
 
+      wrapper.appendChild(meta);
       wrapper.appendChild(bubble);
+
       messageBox.appendChild(wrapper);
       messageBox.scrollTop = messageBox.scrollHeight;
     }

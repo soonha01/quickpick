@@ -7,11 +7,7 @@ function getKSTISOString() {
   return kst.toISOString().slice(0, 19).replace('T', ' ');
 }
 
-document.getElementById('filter-all').onclick = () => loadRooms('전체');
-document.getElementById('filter-bid').onclick = () => loadRooms('낙찰');
-document.getElementById('filter-done').onclick = () => loadRooms('거래완료');
-
-function loadRooms(filter = '전체') {
+function loadRooms() {
   fetch(`/chat/rooms`)
     .then(res => res.json())
     .then(rooms => {
@@ -19,26 +15,9 @@ function loadRooms(filter = '전체') {
       list.innerHTML = '';
 
       rooms.forEach(room => {
-        const status = room.status || '진행중';
-
-        if (filter === '낙찰' && status !== '마감') return;
-        if (filter === '거래완료' && status !== '거래완료') return;
-
         const div = document.createElement('div');
         div.className = 'chat-room-item';
-
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = `${room.title} 채팅방`;
-
-        const badge = document.createElement('span');
-        badge.className = 'badge badge-pill status-badge ' + (
-          status === '마감' ? 'badge-primary' :
-          status === '거래완료' ? 'badge-success' : 'badge-secondary'
-        );
-        badge.textContent = status;
-
-        div.appendChild(titleSpan);
-        div.appendChild(badge);
+        div.textContent = `${room.title} 채팅방`;
 
         div.onclick = () => {
           currentRoomId = room.chat_key;

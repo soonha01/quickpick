@@ -24,7 +24,6 @@ router.get('/room', (req, res) => {
 // 채팅방 리스트 가져오기
 router.get('/rooms', async (req, res) => {
   const loginUserKey = req.session.user?.user_key;
-
   if (!loginUserKey) return res.status(401).json({ error: '로그인이 필요합니다.' });
 
   try {
@@ -39,11 +38,9 @@ router.get('/rooms', async (req, res) => {
       ORDER BY c.chat_key, cr.chat_created_at DESC
     `, [loginUserKey]);
 
-
     const rooms = result.rows.map(room => ({
       chat_key: room.chat_key,
-      title: `${room.title} 경매방`,
-      status: '전체'
+      title: `${room.title} 경매방`
     }));
 
     res.json(rooms);
@@ -82,7 +79,7 @@ router.get('/messages/:chat_key', async (req, res) => {
   }
 });
 
-// 메시지 저장 - created_at 직접 받음
+// 메시지 저장
 router.post('/save', async (req, res) => {
   const { user_key, chat_key, chat_content, created_at } = req.body;
 
