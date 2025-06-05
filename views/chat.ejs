@@ -101,13 +101,16 @@
             document.getElementById('messages').innerHTML = '';
 
             fetch(`/chat/messages/${room.chat_key}`)
-              .then(res => res.json())
-              .then(messages => {
-                messages.forEach(msg => {
-                  const isMine = msg.display_name === userName;
-                  drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
-                });
-              });
+  .then(res => res.json())
+  .then(messages => {
+    messages.forEach(msg => {
+      if (msg.chat_content?.trim()) {  //내용이 비어있지 않을 때만
+        const isMine = msg.display_name === userName;
+        drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
+      }
+    });
+  });
+
           };
           list.appendChild(item);
         });
