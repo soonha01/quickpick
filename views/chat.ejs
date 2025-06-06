@@ -181,6 +181,7 @@
               <div id="roomList"></div>
             </div>
             <div class="chat-main">
+              <h4 id="chatRoomTitle" style="margin-bottom: 0.8rem; color: #333;"></h4>
               <div id="messages" class="chat-messages"></div>
               <div class="chat-input-group">
                 <input type="text" id="messageInput" class="form-control" placeholder="메시지를 입력하세요">
@@ -224,23 +225,29 @@
             item.className = 'chat-room-item';
             item.textContent = `${room.title}`;
             item.onclick = () => {
-              if (currentRoomId) {
-                socket.emit('leaveRoom', currentRoomId);
-              }
-              currentRoomId = room.chat_key;
-              socket.emit('joinRoom', currentRoomId);
-              document.getElementById('messages').innerHTML = '';
-              fetch(`/chat/messages/${room.chat_key}`)
-                .then(res => res.json())
-                .then(messages => {
-                  messages.forEach(msg => {
-                    if (msg.chat_content?.trim()) {
-                      const isMine = msg.display_name === userName;
-                      drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
-                    }
-                  });
-                });
-            };
+  if (currentRoomId) {
+    socket.emit('leaveRoom', currentRoomId);
+  }
+  currentRoomId = room.chat_key;
+  socket.emit('joinRoom', currentRoomId);
+
+  // ✅ 제목 표시 업데이트
+  document.getElementById('chatRoomTitle').textContent = `${room.title}`;
+
+  // 메시지 초기화 후 fetch
+  document.getElementById('messages').innerHTML = '';
+  fetch(`/chat/messages/${room.chat_key}`)
+    .then(res => res.json())
+    .then(messages => {
+      messages.forEach(msg => {
+        if (msg.chat_content?.trim()) {
+          const isMine = msg.display_name === userName;
+          drawMessage(isMine, msg.chat_content, msg.display_name, msg.send_time);
+        }
+      });
+    });
+};
+
             list.appendChild(item);
           });
         });
