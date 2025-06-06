@@ -40,11 +40,9 @@ router.get('/myList/all', requireLogin, async (req, res) => {
          console.error('내 작성 글 조회 오류:', err);
          if (err.stack) console.error(err.stack);
          res.status(500).json({ success: false, message: '서버 오류 발생' });
-}
+}});
 
-});
-
-router.get('/myList/bids', requireLogin, async (req, res) => {
+router.get('/mylist/bids', requireLogin, async (req, res) => {
   const userKey = req.session.user.user_key;
 
   try {
@@ -53,7 +51,7 @@ router.get('/myList/bids', requireLogin, async (req, res) => {
          a.auction_key AS id,
          a.title, 
          b.price AS bid_price, 
-         a.current_price AS highest_bid, 
+         a.current_price,       
          a.status, 
          a.end_time 
        FROM bid b
@@ -69,6 +67,7 @@ router.get('/myList/bids', requireLogin, async (req, res) => {
     res.status(500).json({ success: false, message: '서버 오류 발생' });
   }
 });
+
 
 // 내 판매 내역 API
 router.get('/myList/sells', requireLogin, async (req, res) => {
