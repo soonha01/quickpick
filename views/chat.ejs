@@ -5,57 +5,68 @@
   <title>채팅</title>
   <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <link href="/css/sb-admin-2.min.css" rel="stylesheet">
-  <style>
-    body {
-  background-color: #eaf5ff;
-  font-family: 'Helvetica Neue', sans-serif;
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+body {
+  background: linear-gradient(to right, #9cc4e4, #cfe9ff);
+  font-family: 'Pretendard', 'Helvetica Neue', sans-serif;
+  color: #2a3b4c;
 }
 
 .chat-container {
   display: flex;
   height: 90vh;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+  background-color: #eef6fb;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
 .chat-sidebar {
-  width: 30%;
-  background-color: #dff0ff;
-  padding: 1.2rem;
-  border-right: 1px solid #cbe2f5;
+  width: 22%;
+  background: linear-gradient(180deg, #bddcf3, #a4c8e4);
+  padding: 1.4rem 1rem;
+  border-right: 1px solid #aacce4;
+  overflow-y: auto;
 }
 
 .chat-room-item {
-  padding: 14px 16px;
-  background-color: #ffffff;
+  padding: 13px 15px;
+  background-color: #d8eaf7;
   border-radius: 12px;
   margin-bottom: 12px;
-  color: #222;
-  border: 1px solid #cbe2f5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2a3b4c;
+  border: 1px solid #b1d2eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
 }
 .chat-room-item:hover {
-  background-color: #cfe9ff;
-}
-.chat-room-item .badge {
-  background-color: #ff5c00;
-  color: white;
-  border-radius: 999px;
-  padding: 2px 7px;
-  font-size: 0.75rem;
-  margin-left: 6px;
+  background-color: #c9e0f0;
+  transform: translateY(-1px);
+  cursor: pointer;
 }
 
 .chat-main {
-  width: 70%;
+  width: 78%;
   display: flex;
   flex-direction: column;
-  padding: 1.4rem;
-  background-color: #f5faff;
+  padding: 1.4rem 2rem;
+  background-color: #f3fbff;
+}
+
+#chatRoomTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #56bfff, #4db8ff);
+  color: white;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .chat-messages {
@@ -63,7 +74,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.8rem;
   padding: 1rem;
 }
 
@@ -78,23 +89,26 @@
 }
 .chat-left-wrapper {
   align-items: flex-start;
+  margin-right: auto;
 }
 .chat-right-wrapper {
   align-items: flex-end;
+  margin-left: auto;
 }
 
 .chat-bubble {
-  max-width: 65%;
-  padding: 0.8rem 1.1rem;
-  border-radius: 20px;
-  font-size: 0.92rem;
+  max-width: 70%;
+  padding: 0.8rem 1rem;
+  border-radius: 16px;
+  font-size: 0.94rem;
   word-break: break-word;
   white-space: pre-wrap;
+  position: relative;
+  line-height: 1.45;
 }
-
 .chat-left {
-  background-color: #e1edf7;
-  color: #222;
+  background-color: #b4d8f0;
+  color: #1a1a1a;
 }
 .chat-right {
   background-color: #4db8ff;
@@ -103,65 +117,56 @@
 
 .chat-meta {
   font-size: 0.75rem;
-  color: #666;
-  margin-bottom: 3px;
+  color: #688fa8;
+  margin-bottom: 4px;
 }
 
 .chat-input-group {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1rem;
+  margin-top: 1.2rem;
   padding: 0.6rem 1rem;
-  border-top: 1px solid #d3e6f7;
-}
-
-.chat-icons {
-  display: flex;
-  gap: 0.5rem;
-  color: #4db8ff;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-.chat-icons:hover {
-  color: #2b9cd6;
+  border-top: 1px solid #aacce4;
+  background-color: #d6eafa;
+  border-radius: 12px;
 }
 
 #messageInput {
   flex-grow: 1;
-  border: 1px solid #bcdff5;
+  border: 1px solid #aacce4;
   border-radius: 20px;
-  padding: 0.7rem 1rem;
-  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  background-color: #eef6fb;
+  color: #2a3b4c;
   font-size: 0.95rem;
 }
-
 #messageInput::placeholder {
-  color: #aaa;
+  color: #888;
 }
 
 #sendMessage {
-  background: linear-gradient(135deg, #4db8ff, #329ee0);
+  background: linear-gradient(135deg, #4db8ff, #369de3);
   color: white;
-  padding: 0.6rem 1.2rem;
+  padding: 0.7rem 1.4rem;
   border: none;
   border-radius: 20px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
-
-  white-space: nowrap;  
-  line-height: 1;         
-  min-width: 64px;      
+  white-space: nowrap;
+  line-height: 1;
+  min-width: 64px;
 }
-
 #sendMessage:hover {
-  background: linear-gradient(135deg, #329ee0, #4db8ff);
+  background: linear-gradient(135deg, #369de3, #4db8ff);
   transform: scale(1.05);
 }
 
-  </style>
+#chatRoomTitle:empty {
+  display: none !important;
+}
+</style>
 
   <script>
     const userKey = <%= userKey %>;
