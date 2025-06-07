@@ -13,11 +13,12 @@ router.get('/session-user', (req, res) => {
     return res.status(401).json({ success: false, message: '로그인 필요' });
   }
 
-  const { display_name, phone_number, profile_image } = req.session.user;
+  const { login_id, display_name, phone_number, profile_image } = req.session.user;
 
   return res.json({
     success: true,
     user: {
+      login_id,
       display_name,
       phone_number,
       profile_image
@@ -39,10 +40,10 @@ router.get('/userinfo', async (req, res) => {
     );
 
     if (result.rows.length > 0) {
-      const { display_name, phone_number, profile_image } = result.rows[0];
+      const { display_name,login_id, phone_number, profile_image } = result.rows[0];
       return res.json({
         success: true,
-        user: { display_name, phone_number, profile_image }
+        user: { display_name,login_id, phone_number, profile_image }
       });
     } else {
       return res.status(404).json({ success: false, message: '사용자 정보 없음' });
@@ -86,10 +87,18 @@ router.get('/check-duplicate', async (req, res) => {
     return res.status(400).json({ success: false, message: '잘못된 필드' });
   }
 
-  try {
-    const query = `SELECT COUNT(*) FROM users WHERE ${field} = $1`;
-    const result = await db.query(query, [value]);
+ try {
+    const userKey = req.session?.user?.user_key;
+    let query = `SELECT COUNT(*) FROM users WHERE ${field} = $1`;
+    const params = [value];
 
+    // 자기 자신의 이름은 제외
+    if (userKey) {
+      query += ' AND user_key != $2';
+      params.push(userKey);
+    }
+
+    const result = await db.query(query, params);
     const isDuplicate = parseInt(result.rows[0].count) > 0;
     res.json({ success: true, duplicate: isDuplicate });
   } catch (err) {
