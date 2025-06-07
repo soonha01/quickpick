@@ -46,30 +46,22 @@ app.use('/mypage', mypageRoute);
 app.use('/mylist', myListRoute);
 app.use('/auction', auctionCloseRoute);
 
-// ✅ Socket.io 연결 로직 + 디버깅 로그 추가
+// Socket.io 연결 로직
 io.on('connection', (socket) => {
-  //console.log('✅ 사용자 접속됨:', socket.id);
-
   socket.on('joinRoom', (chatRoomId) => {
     socket.join(chatRoomId);
-    //console.log(`🚪 [${socket.id}] 방 입장: ${chatRoomId}`);
   });
 
   socket.on('leaveRoom', (chatRoomId) => {
     socket.leave(chatRoomId);
-    //console.log(`⬅️ [${socket.id}] 방 나감: ${chatRoomId}`);
   });
 
   socket.on('chatMessage', (data) => {
     const { chatRoomId, userName, message } = data;
-    //console.log(`💬 [${socket.id}] ${userName} → ${message} (방: ${chatRoomId})`);
-
     io.to(chatRoomId).emit('chatMessage', { userName, message });
   });
 
-  socket.on('disconnect', () => {
-    //console.log('❌ 연결 종료:', socket.id);
-  });
+  socket.on('disconnect', () => {});
 });
 
 // 서버 시작

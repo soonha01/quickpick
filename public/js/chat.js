@@ -22,16 +22,14 @@ function loadRooms() {
         div.textContent = `${room.title} 채팅방`;
 
         div.onclick = () => {
-          // ✅ 기존 방 나가기
+          //기존 방 나가기
           if (currentRoomId) {
             socket.emit('leaveRoom', currentRoomId);
-            console.log(`⬅️ leaveRoom: ${currentRoomId}`);
           }
 
-          // ✅ 새 방 입장
+          //새 방 입장
           currentRoomId = room.chat_key;
           socket.emit('joinRoom', currentRoomId);
-          console.log(`🚪 joinRoom: ${currentRoomId}`);
 
           const messageBox = document.getElementById('messages');
           messageBox.innerHTML = '';
@@ -53,7 +51,7 @@ function loadRooms() {
 
 loadRooms();
 
-// ✅ 서버로부터 실시간 메시지 수신
+//서버로부터 실시간 메시지 수신
 socket.on('chatMessage', (data) => {
   if (!currentRoomId) return;
 
@@ -68,7 +66,6 @@ socket.on('chatMessage', (data) => {
     hour12: true
   });
 
-  console.log(`📨 받은 메시지: ${data.userName} → ${data.message}`);
   drawMessage(data.userName === userName, data.message, data.userName, now);
 });
 
@@ -100,7 +97,6 @@ function sendMessage() {
     userName: String(userName),
     message
   });
-  console.log(`📤 보낸 메시지: ${userName} → ${message}`);
 
   // 내 메시지는 바로 렌더링
   drawMessage(true, message, userName, time);
@@ -120,7 +116,7 @@ function sendMessage() {
   });
 }
 
-// ✅ 메시지 UI 생성
+//메시지 UI 생성
 function drawMessage(isMine, content, name, time) {
   const messageBox = document.getElementById('messages');
 
