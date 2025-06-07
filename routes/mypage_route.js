@@ -87,10 +87,18 @@ router.get('/check-duplicate', async (req, res) => {
     return res.status(400).json({ success: false, message: '잘못된 필드' });
   }
 
-  try {
-    const query = `SELECT COUNT(*) FROM users WHERE ${field} = $1`;
-    const result = await db.query(query, [value]);
+ try {
+    const userKey = req.session?.user?.user_key;
+    let query = `SELECT COUNT(*) FROM users WHERE ${field} = $1`;
+    const params = [value];
 
+    // 자기 자신의 이름은 제외
+    if (userKey) {
+      query += ' AND user_key != $2';
+      params.push(userKey);
+    }
+
+    const result = await db.query(query, params);
     const isDuplicate = parseInt(result.rows[0].count) > 0;
     res.json({ success: true, duplicate: isDuplicate });
   } catch (err) {
