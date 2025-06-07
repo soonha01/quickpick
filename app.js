@@ -60,6 +60,10 @@ io.on('connection', (socket) => {
     const { chatRoomId, userName, message } = data;
     io.to(chatRoomId).emit('chatMessage', { userName, message });
   });
+  //입력 중 이벤트
+  socket.on('typing', ({ chatRoomId, userName }) => {
+    socket.to(chatRoomId).emit('typing', userName); // 자기 자신 제외
+  });
 
   socket.on('disconnect', () => {});
 });

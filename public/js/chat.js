@@ -1,5 +1,3 @@
-console.log('✅ chat.js 로딩됨');
-
 const socket = io();
 let currentRoomId = null;
 
@@ -22,12 +20,10 @@ function loadRooms() {
         div.textContent = `${room.title} 채팅방`;
 
         div.onclick = () => {
-          //기존 방 나가기
           if (currentRoomId) {
             socket.emit('leaveRoom', currentRoomId);
           }
 
-          //새 방 입장
           currentRoomId = room.chat_key;
           socket.emit('joinRoom', currentRoomId);
 
@@ -51,7 +47,6 @@ function loadRooms() {
 
 loadRooms();
 
-//서버로부터 실시간 메시지 수신
 socket.on('chatMessage', (data) => {
   if (!currentRoomId) return;
 
@@ -66,6 +61,10 @@ socket.on('chatMessage', (data) => {
     hour12: true
   });
 
+  // 기존 입력 중 알림 제거
+  const oldNotice = document.getElementById('typingNotice');
+  if (oldNotice) oldNotice.remove();
+
   drawMessage(data.userName === userName, data.message, data.userName, now);
 });
 
@@ -73,6 +72,13 @@ socket.on('chatMessage', (data) => {
 document.getElementById('sendMessage').addEventListener('click', sendMessage);
 document.getElementById('messageInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
+});
+
+// ✅ 입력 감지 → socket.emit('typing')
+document.getElementById('messageInput').addEventListener('input', () => {
+  if (currentRoomId && userName) {
+    socket.emit('typing', { chatRoomId: currentRoomId, userName });
+  }
 });
 
 function sendMessage() {
@@ -91,17 +97,14 @@ function sendMessage() {
     hour12: true
   });
 
-  // 실시간 전송
   socket.emit('chatMessage', {
     chatRoomId: currentRoomId,
     userName: String(userName),
     message
   });
 
-  // 내 메시지는 바로 렌더링
   drawMessage(true, message, userName, time);
 
-  // DB 저장
   fetch('/chat/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -116,9 +119,12 @@ function sendMessage() {
   });
 }
 
-//메시지 UI 생성
 function drawMessage(isMine, content, name, time) {
   const messageBox = document.getElementById('messages');
+
+  // 입력 중 알림 제거
+  const oldNotice = document.getElementById('typingNotice');
+  if (oldNotice) oldNotice.remove();
 
   const wrapper = document.createElement('div');
   wrapper.className = 'd-flex mb-2 ' + (isMine ? 'justify-content-end' : 'justify-content-start');
@@ -131,3 +137,35 @@ function drawMessage(isMine, content, name, time) {
   messageBox.appendChild(wrapper);
   messageBox.scrollTop = messageBox.scrollHeight;
 }
+
+socket.on('typing', (name) => {
+  if (name === userName) return;
+
+  const messageBox = document.getElementById('messages');
+
+  let notice = document.getElementById('typingNotice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'typingNotice';
+    notice.textContent = `${name}님이 입력 중입니다...`;
+    notice.style.backgroundColor = '#ffd3d3';
+    notice.style.color = '#000';
+    notice.style.padding = '10px';
+    notice.style.margin = '8px 10px';
+    notice.style.borderRadius = '10px';
+    notice.style.fontWeight = 'bold';
+    notice.style.boxShadow = '0 0 5px rgba(0,0,0,0.2)';
+    notice.style.textAlign = 'left';
+    messageBox.appendChild(notice);
+  }
+
+  messageBox.scrollTop = messageBox.scrollHeight;
+
+  clearTimeout(window.typingTimeout);
+  window.typingTimeout = setTimeout(() => {
+    const el = document.getElementById('typingNotice');
+    if (el) el.remove();
+  }, 1000); // 1초 후 사라지도록 변경
+});
+
+
