@@ -7,6 +7,16 @@
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="/css/sb-admin-2.min.css" rel="stylesheet">
 
+    <style>
+    .profile-img {
+         width: 150px;
+         height: 150px;
+         object-fit: cover;
+         border-radius: 50%;
+         border: 2px solid #ddd;
+         }
+         </style>
+
     <!-- JS -->
     <script src="/vendor/jquery/jquery.min.js"></script>
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -42,7 +52,7 @@
                                 <!-- 보기 모드 -->
                                  <div id="profileView">
                                     <p><strong>프로필 사진:</strong><br>
-                                        <img id="viewProfileImage" src="/uploads/user_1.jpg" alt="프로필 이미지" width="100">
+                                        <img id="viewProfileImage" src="/uploads/user_1.jpg" alt="프로필 이미지" class="profile-img">
                                     </p>
                                     <p><strong>닉네임:</strong> <span id="viewDisplayName"></span></p>
                                     <p><strong>아이디:</strong> <span id="viewUserId"></span></p>
