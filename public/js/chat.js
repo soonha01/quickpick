@@ -74,12 +74,21 @@ document.getElementById('messageInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// ✅ 입력 감지 → socket.emit('typing')
 document.getElementById('messageInput').addEventListener('input', () => {
-  if (currentRoomId && userName) {
+  const inputValue = document.getElementById('messageInput').value.trim();
+
+  if (!currentRoomId || !userName) return;
+
+  if (inputValue.length === 0) {
+    // 입력창이 비어 있으면 알림 즉시 제거
+    const el = document.getElementById('typingNotice');
+    if (el) el.remove();
+  } else {
+    // 입력값이 있으면 타이핑 알림 전송
     socket.emit('typing', { chatRoomId: currentRoomId, userName });
   }
 });
+
 
 function sendMessage() {
   const input = document.getElementById('messageInput');

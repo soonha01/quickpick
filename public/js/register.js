@@ -2,24 +2,36 @@
 function checkDuplicate(field) {
   const value = document.getElementById(field === 'login_id' ? 'login_id' : 'display_name').value;
 
-  if (!value) {
-    alert('값을 입력하세요.');
-    return;
+if (!value) {
+  if (field === 'login_id') {
+    alert('아이디를 입력하세요.');
+  } else {
+    alert('닉네임을 입력하세요.');
   }
+  return;
+}
 
-  fetch(`/check-duplicate?field=${field}&value=${encodeURIComponent(value)}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.exists) {
-        alert('❌ 이미 사용 중인 값입니다.');
+fetch(`/check-duplicate?field=${field}&value=${encodeURIComponent(value)}`)
+  .then(res => res.json())
+  .then(data => {
+    if (data.exists) {
+      if (field === 'login_id') {
+        alert('이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.');
       } else {
-        alert('✅ 사용 가능한 값입니다.');
+        alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해주세요.');
       }
-    })
-    .catch(err => {
-      console.error('중복 확인 오류:', err);
-      alert('중복 확인 중 오류 발생');
-    });
+    } else {
+      if (field === 'login_id') {
+        alert('사용 가능한 아이디입니다!');
+      } else {
+        alert('사용 가능한 닉네임입니다!');
+      }
+    }
+  })
+  .catch(err => {
+    console.error('중복 확인 오류:', err);
+    alert('중복 확인 중 오류가 발생했습니다.');
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -320,43 +320,53 @@
       if (e.key === 'Enter') sendMessage();
     });
 
-    // 입력 시 타이핑 알림 emit
     document.getElementById('messageInput').addEventListener('input', () => {
-      if (currentRoomId && userName) {
-        socket.emit('typing', { chatRoomId: currentRoomId, userName });
-      }
-    });
+  const inputValue = document.getElementById('messageInput').value;
+
+  if (!currentRoomId || !userName) return;
+
+  if (inputValue.length === 0) {
+  socket.emit('stopTyping', { chatRoomId: currentRoomId, userName }); // ✅ 입력 멈춤 알림
+} else {
+  socket.emit('typing', { chatRoomId: currentRoomId, userName });
+}
+});
 
     // 타이핑 수신 시 출력
     let typingTimer = null;
     socket.on('typing', (name) => {
-      if (name === userName) return;
+  if (name === userName) return;
 
-      const messageBox = document.getElementById('messages');
-      let notice = document.getElementById('typingNotice');
-      if (!notice) {
-        notice = document.createElement('div');
-        notice.id = 'typingNotice';
-        notice.textContent = `${name}님이 입력 중입니다...`;
-        notice.style.backgroundColor = '#ffd3d3';
-        notice.style.color = '#000';
-        notice.style.padding = '10px';
-        notice.style.margin = '8px 10px';
-        notice.style.borderRadius = '10px';
-        notice.style.fontWeight = 'bold';
-        notice.style.boxShadow = '0 0 5px rgba(0,0,0,0.2)';
-        notice.style.alignSelf = 'flex-start';
-        messageBox.appendChild(notice);
-      }
+  const messageBox = document.getElementById('messages');
+  let notice = document.getElementById('typingNotice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'typingNotice';
+    notice.textContent = `💬 ${name}님이 입력 중입니다...`;
+    notice.style.backgroundColor = '#eaf4ff'; // 은은한 하늘색 배경
+notice.style.color = '#357abd'; // 파란 계열 텍스트
+notice.style.padding = '6px 12px';
+notice.style.margin = '4px 10px';
+notice.style.borderRadius = '8px';
+notice.style.fontWeight = '500';
+notice.style.fontSize = '0.85rem';
+notice.style.fontStyle = 'italic';
+notice.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+notice.style.alignSelf = 'flex-start';
+notice.style.transition = 'all 0.2s ease';
 
-      messageBox.scrollTop = messageBox.scrollHeight;
+    messageBox.appendChild(notice);
+  }
 
-      clearTimeout(typingTimer); // ✅ 기존 타이머 초기화
-      typingTimer = setTimeout(() => {
-        const el = document.getElementById('typingNotice');
-        if (el) el.remove();
-      }, 1000); // 1초 동안 새 타이핑이 없으면 제거
-    });
+  messageBox.scrollTop = messageBox.scrollHeight;
+});
+
+socket.on('stopTyping', (name) => {
+  if (name === userName) return;
+
+  const el = document.getElementById('typingNotice');
+  if (el) el.remove();
+});
 
 
     socket.on('chatMessage', (data) => {

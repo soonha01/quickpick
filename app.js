@@ -60,9 +60,15 @@ io.on('connection', (socket) => {
     const { chatRoomId, userName, message } = data;
     io.to(chatRoomId).emit('chatMessage', { userName, message });
   });
-  //입력 중 이벤트
+
+  // 입력 중 이벤트
   socket.on('typing', ({ chatRoomId, userName }) => {
-    socket.to(chatRoomId).emit('typing', userName); // 자기 자신 제외
+    socket.to(chatRoomId).emit('typing', userName);
+  });
+
+  // 입력 멈춤 이벤트 추가
+  socket.on('stopTyping', ({ chatRoomId, userName }) => {
+    socket.to(chatRoomId).emit('stopTyping', userName);
   });
 
   socket.on('disconnect', () => {});
