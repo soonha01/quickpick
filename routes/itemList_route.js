@@ -46,7 +46,7 @@ router.post('/itemWrite', upload.single('image'), async (req, res) => {
         start_price, current_price, bid_unit,
         status, created_at, image_url
       ) VALUES (
-        $1, $2, $3, NOW() + interval '${duration} hour',
+        $1, $2, $3, (NOW() AT TIME ZONE 'Asia/Seoul') + interval '${duration} hour',
         $4, $4, $5,
         '진행중', NOW(), $6
       ) RETURNING *;
@@ -73,7 +73,7 @@ router.get('/itemList/data', async (req, res) => {
     await db.query(`
       UPDATE auction
       SET status = '마감'
-      WHERE end_time < NOW() AND status = '진행중';
+      WHERE end_time <= (NOW() AT TIME ZONE 'Asia/Seoul') AND status = '진행중';
     `);
 
     const result = await db.query(`
@@ -84,7 +84,7 @@ router.get('/itemList/data', async (req, res) => {
         current_price,
         bid_unit,
         image_url,
-        TO_CHAR(end_time, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS end_time,
+        TO_CHAR(end_time, 'YYYY-MM-DD"T"HH24:MI:SS') AS end_time,
         status
       FROM auction
       ORDER BY created_at DESC;

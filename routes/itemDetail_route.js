@@ -24,7 +24,7 @@ router.get('/itemDetail/data', async (req, res) => {
     const result = await db.query(`
       SELECT 
         title, content, current_price, bid_unit, 
-        TO_CHAR(end_time, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS end_time,
+        TO_CHAR(end_time, 'YYYY-MM-DD"T"HH24:MI:SS') AS end_time,
         status, user_key, image_url
       FROM auction
       WHERE auction_key = $1
@@ -82,7 +82,25 @@ router.post('/itemDetail/bid', async (req, res) => {
       return res.status(400).json({ message: '마감된 경매입니다.' });
     }
 
+
+    const prevPrice = Number(item.current_price);
     const newPrice = Number(item.current_price) + Number(item.bid_unit);
+
+    console.log('🟡 입찰 요청: 유저', loginUserKey, '경매:', itemId);
+    console.log('prevPrice:', prevPrice, 'newPrice:', newPrice);
+
+    // ✅ 입찰 중복 방지를 위한 조건부 업데이트
+    const updateResult = await db.query(`
+      UPDATE auction
+      SET current_price = $1, top_bidder = $2
+      WHERE auction_key = $3 AND current_price = $4
+    `, [newPrice, loginUserKey, itemId, prevPrice]);
+
+    if (updateResult.rowCount === 0) {
+      return res.status(400).json({
+        message: '⚠️ 다른 사용자가 먼저 입찰했습니다. 페이지를 새로고침 해주세요.'
+      });
+    }
 
     // ✅ 최고가 및 top_bidder 업데이트
     await db.query(`
