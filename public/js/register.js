@@ -56,6 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    const termsChecked = document.getElementById('termsCheck').checked;
+    if (!termsChecked) {
+      alert('약관에 동의해야 회원가입이 가능합니다.');
+    return;
+  }
+
     const formData = {
       login_id: document.getElementById('login_id').value,
       display_name: document.getElementById('display_name').value,
