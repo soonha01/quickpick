@@ -4,14 +4,15 @@ const db = require('../db');
 
 router.post('/process-expired-auctions', async (req, res) => {
   try {
-    const now = new Date();
-
-    // 마감된 경매 찾기
+    // 마감 상태인데 채팅방이 없는 애들만 조회
     const expired = await db.query(`
       SELECT auction_key, user_key AS seller_id
       FROM auction
-      WHERE end_time <= $1 AND status = '진행중'
-    `, [now]);
+      WHERE status = '마감'
+        AND auction_key NOT IN (
+          SELECT auction_key FROM chatting
+        )
+    `);
 
     for (const { auction_key, seller_id } of expired.rows) {
       // 최고 입찰자 찾기
@@ -24,40 +25,26 @@ router.post('/process-expired-auctions', async (req, res) => {
       `, [auction_key]);
 
       const buyer_id = bidRes.rows[0]?.buyer_id;
-      if (!buyer_id) continue; // 입찰 없으면 생략
+      if (!buyer_id) continue;
 
-      // 이미 채팅방 생성됐는지 확인
-      const chatExists = await db.query(`
-        SELECT chat_key FROM chatting WHERE auction_key = $1
-      `, [auction_key]);
-
-      if (chatExists.rows.length > 0) continue; // 이미 있음
-
-      // 채팅방 생성
+      // 채팅 생성
       const newChat = await db.query(`
         INSERT INTO chatting (auction_key) VALUES ($1) RETURNING chat_key
       `, [auction_key]);
 
       const chat_key = newChat.rows[0].chat_key;
 
-      // 채팅 참가자 2명 등록 (판매자, 낙찰자)
       await db.query(`
         INSERT INTO chattingRoom (chat_key, user_key, chat_content, chat_created_at)
         VALUES 
           ($1, $2, '', NOW()),
           ($1, $3, '', NOW())
       `, [chat_key, seller_id, buyer_id]);
-
-      // auction 테이블도 상태 변경
-      await db.query(`
-        UPDATE auction SET status = '마감' WHERE auction_key = $1
-      `, [auction_key]);
-
     }
 
     res.json({ success: true });
   } catch (err) {
-    console.error('❌ 마감 처리 중 오류:', err);
+    console.error('❌ 채팅 생성 중 오류:', err);
     res.status(500).json({ error: '서버 오류' });
   }
 });

@@ -80,11 +80,11 @@ server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-// 1분마다 자동 마감 처리 호출
+// 10초마다 자동 마감 처리 호출
 setInterval(() => {
   fetch('http://localhost:3000/auction/process-expired-auctions', {
     method: 'POST'
   }).then(res => res.json())
     .then(json => console.log('[마감처리]', json))
     .catch(err => console.error('❌ 마감 처리 실패:', err));
-}, 60000); // 1분
+}, 6000); // 10초
