@@ -3,17 +3,23 @@
 <head>
   <meta charset="utf-8">
   <title>채팅</title>
+
+  <!-- 폰트 및 기본 CSS 로딩 -->
   <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
   <style>
+    /* Pretendard 폰트 적용 */
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
+    /* 전체 배경 및 폰트 스타일 */
     body {
       background: linear-gradient(to right, #9cc4e4, #cfe9ff);
       font-family: 'Pretendard', 'Helvetica Neue', sans-serif;
       color: #2a3b4c;
     }
 
+    /* 채팅 전체 레이아웃 */
     .chat-container {
       display: flex;
       height: 90vh;
@@ -23,6 +29,7 @@
       overflow: hidden;
     }
 
+    /* 채팅방 목록 영역 */
     .chat-sidebar {
       width: 22%;
       background: linear-gradient(180deg, #bddcf3, #a4c8e4);
@@ -31,6 +38,7 @@
       overflow-y: auto;
     }
 
+    /* 채팅방 목록 아이템 스타일 */
     .chat-room-item {
       padding: 13px 15px;
       background-color: #d8eaf7;
@@ -50,6 +58,7 @@
       cursor: pointer;
     }
 
+    /* 채팅 메시지 영역 */
     .chat-main {
       width: 78%;
       display: flex;
@@ -58,6 +67,7 @@
       background-color: #f3fbff;
     }
 
+    /* 채팅방 제목 스타일 */
     #chatRoomTitle {
       font-size: 1.25rem;
       font-weight: 600;
@@ -70,6 +80,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
+    /* 채팅 메시지 박스 스타일 */
     .chat-messages {
       flex-grow: 1;
       overflow-y: auto;
@@ -79,6 +90,7 @@
       padding: 1rem;
     }
 
+    /* 말풍선 애니메이션 */
     .chat-wrapper {
       display: flex;
       flex-direction: column;
@@ -90,15 +102,9 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .chat-left-wrapper {
-      align-items: flex-start;
-      margin-right: auto;
-    }
-
-    .chat-right-wrapper {
-      align-items: flex-end;
-      margin-left: auto;
-    }
+    /* 채팅 말풍선 좌우 정렬 */
+    .chat-left-wrapper { align-items: flex-start; margin-right: auto; }
+    .chat-right-wrapper { align-items: flex-end; margin-left: auto; }
 
     .chat-bubble {
       max-width: 100%;
@@ -111,15 +117,8 @@
       line-height: 1.45;
     }
 
-    .chat-left {
-      background-color: #b4d8f0;
-      color: #1a1a1a;
-    }
-
-    .chat-right {
-      background-color: #4db8ff;
-      color: white;
-    }
+    .chat-left { background-color: #b4d8f0; color: #1a1a1a; }
+    .chat-right { background-color: #4db8ff; color: white; }
 
     .chat-meta {
       font-size: 0.75rem;
@@ -127,6 +126,7 @@
       margin-bottom: 4px;
     }
 
+    /* 입력창과 전송버튼 스타일 */
     .chat-input-group {
       display: flex;
       align-items: center;
@@ -148,9 +148,7 @@
       font-size: 0.95rem;
     }
 
-    #messageInput::placeholder {
-      color: #888;
-    }
+    #messageInput::placeholder { color: #888; }
 
     #sendMessage {
       background: linear-gradient(135deg, #4db8ff, #369de3);
@@ -171,31 +169,44 @@
       transform: scale(1.05);
     }
 
-    #chatRoomTitle:empty {
-      display: none !important;
-    }
+    /* 채팅방 제목 없을 경우 숨김 */
+    #chatRoomTitle:empty { display: none !important; }
   </style>
 
+  <!-- 서버에서 넘긴 사용자 정보 (EJS 변수 → JS 변수로 저장) -->
   <script>
     const userKey = <%= userKey %>;
     const userName = "<%= userName %>";
   </script>
 </head>
 
+
 <body id="page-top">
+  <!-- 전체 페이지 래퍼 -->
   <div id="wrapper">
+    <!-- 왼쪽 사이드바가 동적으로 삽입될 자리 -->
     <div id="sidebar-container"></div>
+
+    <!-- 메인 콘텐츠 영역 -->
     <div id="content-wrapper" class="d-flex flex-column">
       <div id="content">
+        <!-- 상단 네비게이션 바 삽입 자리 -->
         <div id="topbar-container"></div>
+
+        <!-- 페이지 내용 -->
         <div class="container-fluid">
           <div class="chat-container">
+            <!-- 채팅방 목록 영역 -->
             <div class="chat-sidebar">
-              <div id="roomList"></div>
+              <div id="roomList"></div> <!-- 채팅방 목록이 여기에 동적 생성됨 -->
             </div>
+
+            <!-- 채팅 메시지 영역 -->
             <div class="chat-main">
-              <h4 id="chatRoomTitle"></h4>
-              <div id="messages" class="chat-messages"></div>
+              <h4 id="chatRoomTitle"></h4> <!-- 채팅방 제목 표시 -->
+              <div id="messages" class="chat-messages"></div> <!-- 채팅 메시지 표시 영역 -->
+
+              <!-- 메시지 입력창 및 전송버튼 -->
               <div class="chat-input-group">
                 <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
                 <button id="sendMessage">전송</button>
@@ -203,45 +214,56 @@
             </div>
           </div>
         </div>
+
+        <!-- 하단 푸터 삽입 영역 -->
         <div id="footer-container"></div>
       </div>
     </div>
   </div>
 
+  <!-- 외부 스크립트들 로딩 -->
   <script src="/js/includeAndSession.js"></script>
   <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="/js/sb-admin-2.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    let currentRoomId = null;
 
+  <!-- 채팅 로직 -->
+  <script>
+    const socket = io(); // 소켓 연결
+    let currentRoomId = null; // 현재 입장 중인 채팅방 ID
+
+    // 현재 시간을 KST 기준 ISO 포맷 문자열로 반환
     function getKSTISOString() {
       const now = new Date();
       const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
       return kst.toISOString().slice(0, 19).replace('T', ' ');
     }
 
+    // 채팅방 목록 로드 및 클릭 시 동작 정의
     function loadRooms() {
       fetch(`/chat/rooms`)
         .then(res => res.json())
         .then(rooms => {
           const list = document.getElementById('roomList');
-          list.innerHTML = '';
+          list.innerHTML = ''; // 기존 목록 비움
+
           rooms.forEach(room => {
             const item = document.createElement('div');
             item.className = 'chat-room-item';
             item.textContent = `${room.title}`;
+
+            // 채팅방 클릭 시 입장 및 메시지 로드
             item.onclick = () => {
-              if (currentRoomId) socket.emit('leaveRoom', currentRoomId);
+              if (currentRoomId) socket.emit('leaveRoom', currentRoomId); // 기존 방 나가기
               currentRoomId = room.chat_key;
-              socket.emit('joinRoom', currentRoomId);
+              socket.emit('joinRoom', currentRoomId); // 새 방 입장
 
               document.getElementById('chatRoomTitle').textContent = `${room.title}`;
-              document.getElementById('messages').innerHTML = '';
+              document.getElementById('messages').innerHTML = ''; // 채팅창 초기화
 
+              // 기존 메시지 로드
               fetch(`/chat/messages/${room.chat_key}`)
                 .then(res => res.json())
                 .then(messages => {
@@ -258,12 +280,15 @@
         });
     }
 
+    // 채팅 메시지를 화면에 출력
     function drawMessage(isMine, content, name, time) {
       const messageBox = document.getElementById('messages');
 
+      // 타이핑 알림 제거
       const notice = document.getElementById('typingNotice');
       if (notice) notice.remove();
 
+      // 말풍선 요소 생성
       const wrapper = document.createElement('div');
       wrapper.className = 'chat-wrapper ' + (isMine ? 'chat-right-wrapper' : 'chat-left-wrapper');
 
@@ -275,17 +300,20 @@
       bubble.className = 'chat-bubble ' + (isMine ? 'chat-right' : 'chat-left');
       bubble.textContent = content;
 
+      // 요소 추가 및 스크롤 맨 아래로
       wrapper.appendChild(meta);
       wrapper.appendChild(bubble);
       messageBox.appendChild(wrapper);
       messageBox.scrollTop = messageBox.scrollHeight;
     }
 
+    // 메시지 전송 처리
     function sendMessage() {
       const input = document.getElementById('messageInput');
       const message = input.value.trim();
       if (!message || !currentRoomId) return;
 
+      // 현재 시간 포맷
       const time = new Date().toLocaleString('ko-KR', {
         timeZone: 'Asia/Seoul',
         year: 'numeric', month: 'numeric', day: 'numeric',
@@ -293,14 +321,17 @@
         hour12: true
       });
 
+      // 소켓으로 메시지 전송
       socket.emit('chatMessage', {
         chatRoomId: currentRoomId,
         userName: String(userName),
         message
       });
 
+      // 본인 메시지 화면에 표시
       drawMessage(true, message, userName, time);
 
+      // DB에 저장
       fetch('/chat/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -311,66 +342,66 @@
           created_at: getKSTISOString()
         })
       }).then(() => {
-        input.value = '';
+        input.value = ''; // 전송 후 입력창 비움
       });
     }
 
-        document.getElementById('sendMessage').addEventListener('click', sendMessage);
+    // 버튼 클릭 및 Enter 키로 메시지 전송
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
     document.getElementById('messageInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage();
     });
 
+    // 입력 중이면 타이핑 알림 보내기
     document.getElementById('messageInput').addEventListener('input', () => {
-  const inputValue = document.getElementById('messageInput').value;
+      const inputValue = document.getElementById('messageInput').value;
+      if (!currentRoomId || !userName) return;
 
-  if (!currentRoomId || !userName) return;
+      if (inputValue.length === 0) {
+        socket.emit('stopTyping', { chatRoomId: currentRoomId, userName });
+      } else {
+        socket.emit('typing', { chatRoomId: currentRoomId, userName });
+      }
+    });
 
-  if (inputValue.length === 0) {
-  socket.emit('stopTyping', { chatRoomId: currentRoomId, userName }); // ✅ 입력 멈춤 알림
-} else {
-  socket.emit('typing', { chatRoomId: currentRoomId, userName });
-}
-});
-
-    // 타이핑 수신 시 출력
+    // 상대방의 입력 중 알림 표시
     let typingTimer = null;
     socket.on('typing', (name) => {
-  if (name === userName) return;
+      if (name === userName) return;
 
-  const messageBox = document.getElementById('messages');
-  let notice = document.getElementById('typingNotice');
-  if (!notice) {
-    notice = document.createElement('div');
-    notice.id = 'typingNotice';
-    notice.textContent = `💬 ${name}님이 입력 중입니다...`;
-    notice.style.backgroundColor = '#eaf4ff'; // 은은한 하늘색 배경
-notice.style.color = '#357abd'; // 파란 계열 텍스트
-notice.style.padding = '6px 12px';
-notice.style.margin = '4px 10px';
-notice.style.borderRadius = '8px';
-notice.style.fontWeight = '500';
-notice.style.fontSize = '0.85rem';
-notice.style.fontStyle = 'italic';
-notice.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
-notice.style.alignSelf = 'flex-start';
-notice.style.transition = 'all 0.2s ease';
+      const messageBox = document.getElementById('messages');
+      let notice = document.getElementById('typingNotice');
+      if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'typingNotice';
+        notice.textContent = `💬 ${name}님이 입력 중입니다...`;
+        notice.style.backgroundColor = '#eaf4ff';
+        notice.style.color = '#357abd';
+        notice.style.padding = '6px 12px';
+        notice.style.margin = '4px 10px';
+        notice.style.borderRadius = '8px';
+        notice.style.fontWeight = '500';
+        notice.style.fontSize = '0.85rem';
+        notice.style.fontStyle = 'italic';
+        notice.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+        notice.style.alignSelf = 'flex-start';
+        notice.style.transition = 'all 0.2s ease';
+        messageBox.appendChild(notice);
+      }
 
-    messageBox.appendChild(notice);
-  }
+      messageBox.scrollTop = messageBox.scrollHeight;
+    });
 
-  messageBox.scrollTop = messageBox.scrollHeight;
-});
+    // 상대방 입력 멈춤 알림 제거
+    socket.on('stopTyping', (name) => {
+      if (name === userName) return;
+      const el = document.getElementById('typingNotice');
+      if (el) el.remove();
+    });
 
-socket.on('stopTyping', (name) => {
-  if (name === userName) return;
-
-  const el = document.getElementById('typingNotice');
-  if (el) el.remove();
-});
-
-
+    // 서버에서 수신된 메시지 출력
     socket.on('chatMessage', (data) => {
-      if (data.userName === userName) return;
+      if (data.userName === userName) return; // 내 메시지는 이미 출력했음
       const now = new Date().toLocaleString('ko-KR', {
         timeZone: 'Asia/Seoul',
         year: 'numeric', month: 'numeric', day: 'numeric',
@@ -380,6 +411,7 @@ socket.on('stopTyping', (name) => {
       drawMessage(false, data.message, data.userName, now);
     });
 
+    // 페이지 진입 시 채팅방 목록 불러오기
     loadRooms();
   </script>
 </body>
