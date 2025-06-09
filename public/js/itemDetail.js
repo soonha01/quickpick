@@ -29,6 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#bid_unit').textContent = Number(data.bid_unit).toLocaleString() + '원';
       document.querySelector('#status').textContent = data.status;
 
+
+      //상태 뱃지(마감->빨간색  진행중->초록색)
+      const statusElem = document.querySelector('#status');
+      statusElem.textContent = data.status;
+
+      if (data.status === '마감') {
+        statusElem.classList.remove('badge-success');
+        statusElem.classList.add('badge-danger');
+      } else {
+        statusElem.classList.remove('badge-danger');
+        statusElem.classList.add('badge-success');
+      }
+
       if (data.imageUrl) {
         document.querySelector('#itemImage').src = data.imageUrl;
         document.querySelector('#itemImage').style.display = 'block';
