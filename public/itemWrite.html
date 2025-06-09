@@ -117,6 +117,12 @@
       const duration = document.getElementById('duration').value;
       const minPrice = unformatNumber(minPriceInput.value);
       const bidStep = unformatNumber(bidStepInput.value);
+      
+      //호가단위가 최소금액보다 크면 막기
+      if (bidStep > minPrice) {
+        alert('호가 단위는 시작 금액을 초과할 수 없습니다.');
+        return;
+      }
 
       if (!title || !description || !duration || !minPrice || !bidStep) {
         alert('모든 입력값을 올바르게 입력해주세요.');
