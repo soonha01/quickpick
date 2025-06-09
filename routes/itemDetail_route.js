@@ -86,8 +86,6 @@ router.post('/itemDetail/bid', async (req, res) => {
     const prevPrice = Number(item.current_price);
     const newPrice = Number(item.current_price) + Number(item.bid_unit);
 
-    console.log('🟡 입찰 요청: 유저', loginUserKey, '경매:', itemId);
-    console.log('prevPrice:', prevPrice, 'newPrice:', newPrice);
 
     // ✅ 입찰 중복 방지를 위한 조건부 업데이트
     const updateResult = await db.query(`
