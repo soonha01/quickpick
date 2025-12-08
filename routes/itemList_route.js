@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require('../db');
 const multer = require('multer');
 
-// ✅ multer 설정: public/uploads 폴더에 저장
+// multer 설정: public/uploads 폴더에 저장
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '../public/uploads'));
@@ -27,7 +27,7 @@ router.get('/itemWrite', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/itemWrite.html'));
 });
 
-// ✅ 경매 글 등록 처리 (이미지 업로드 포함)
+//  경매 글 등록 처리 (이미지 업로드 포함)
 router.post('/itemWrite', upload.single('image'), async (req, res) => {
   const user = req.session.user;
   if (!user) {
@@ -36,7 +36,7 @@ router.post('/itemWrite', upload.single('image'), async (req, res) => {
 
   const { title, description, duration, minPrice, bidStep } = req.body;
 
-  // ✅ 이미지 파일이 있으면 URL로 저장, 없으면 빈 문자열
+  //  이미지 파일이 있으면 URL로 저장, 없으면 빈 문자열
   const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
 
   try {

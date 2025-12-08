@@ -13,14 +13,14 @@ router.get('/itemDetail/data', async (req, res) => {
   const id = req.query.id;
 
   try {
-    // ✅ 마감 상태 갱신
+    // 마감 상태 갱신
     await db.query(`
       UPDATE auction
       SET status = '마감'
       WHERE end_time < NOW() AND status = '진행중';
     `);
 
-    // ✅ 상세 데이터 조회
+    // 상세 데이터 조회
     const result = await db.query(`
       SELECT 
         title, content, current_price, bid_unit, 
@@ -54,7 +54,7 @@ router.get('/itemDetail/data', async (req, res) => {
   }
 });
 
-// ✅ 입찰 처리
+//  입찰 처리
 router.post('/itemDetail/bid', async (req, res) => {
   const itemId = req.body.id;
   const loginUserKey = req.session.user?.user_key;
@@ -87,7 +87,7 @@ router.post('/itemDetail/bid', async (req, res) => {
     const newPrice = Number(item.current_price) + Number(item.bid_unit);
 
 
-    // ✅ 입찰 중복 방지를 위한 조건부 업데이트
+    //  입찰 중복 방지를 위한 조건부 업데이트
     const updateResult = await db.query(`
       UPDATE auction
       SET current_price = $1, top_bidder = $2
@@ -100,14 +100,14 @@ router.post('/itemDetail/bid', async (req, res) => {
       });
     }
 
-    // ✅ 최고가 및 top_bidder 업데이트
+    //  최고가 및 top_bidder 업데이트
     await db.query(`
       UPDATE auction
       SET current_price = $1, top_bidder = $2
       WHERE auction_key = $3
     `, [newPrice, loginUserKey, itemId]);
 
-    // ✅ 입찰 기록 저장 (user_id → user_key로 수정)
+    //  입찰 기록 저장 (user_id → user_key로 수정)
     await db.query(`
       INSERT INTO bid (auction_key, user_key, price, bid_time)
       VALUES ($1, $2, $3, NOW())

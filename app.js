@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// ✅ 뷰 엔진 설정
+//  뷰 엔진 설정
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -85,6 +85,5 @@ setInterval(() => {
   fetch('http://localhost:3000/auction/process-expired-auctions', {
     method: 'POST'
   }).then(res => res.json())
-    .then(json => console.log('[마감처리]', json))
-    .catch(err => console.error('❌ 마감 처리 실패:', err));
+    .catch(err => console.error('마감 처리 실패:', err));
 }, 6000); // 10초

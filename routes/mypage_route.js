@@ -36,7 +36,7 @@ router.get('/userinfo', async (req, res) => {
   try {
     const result = await db.query(
       'SELECT display_name, phone_number, profile_image FROM users WHERE user_key = $1',
-      [req.session.user.user_key]   // ✅ 수정됨
+      [req.session.user.user_key]   //  수정됨
     );
 
     if (result.rows.length > 0) {
