@@ -1,65 +1,63 @@
-# [Start Bootstrap - SB Admin 2](https://startbootstrap.com/theme/sb-admin-2/)
+# 🛍️ QuickPick - 실시간 경매 웹 애플리케이션
 
-[SB Admin 2](https://startbootstrap.com/theme/sb-admin-2/) is an open source admin dashboard theme for [Bootstrap](https://getbootstrap.com/) created by [Start Bootstrap](https://startbootstrap.com/).
+> 실시간으로 상품을 경매하고 낙찰받을 수 있는 웹 기반 경매 플랫폼입니다.  
+> 실시간 입찰, 마감 처리, 채팅, 마이페이지 등 필수 경매 기능을 구현했습니다.
 
-For the legacy Bootstrap 3 version of this theme, you can view the [last stable release](https://github.com/StartBootstrap/startbootstrap-sb-admin-2/releases/tag/v3.3.7%2B1) of SB Admin 2 for Bootstrap 3.
+![quickpick](https://your-image-url.com)
 
-## Preview
+---
 
-[![SB Admin 2 Preview](https://assets.startbootstrap.com/img/screenshots/themes/sb-admin-2.png)](https://startbootstrap.github.io/startbootstrap-sb-admin-2/)
+## 📌 프로젝트 개요
 
-**[Launch Live Preview](https://startbootstrap.github.io/startbootstrap-sb-admin-2/)**
+**QuickPick**은 유저가 실시간으로 상품을 경매에 등록하고, 제한 시간 내 입찰을 통해 낙찰받을 수 있는 웹 애플리케이션입니다.  
+프론트와 백엔드를 직접 구성하고, PostgreSQL과 연동하여 실시간 경매 처리를 구현했습니다.
 
-## Status
+---
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/StartBootstrap/startbootstrap-sb-admin-2/master/LICENSE)
-[![npm version](https://img.shields.io/npm/v/startbootstrap-sb-admin-2.svg)](https://www.npmjs.com/package/startbootstrap-sb-admin-2)
-[![Build Status](https://travis-ci.org/StartBootstrap/startbootstrap-sb-admin-2.svg?branch=master)](https://travis-ci.org/StartBootstrap/startbootstrap-sb-admin-2)
-[![dependencies Status](https://david-dm.org/StartBootstrap/startbootstrap-sb-admin-2/status.svg)](https://david-dm.org/StartBootstrap/startbootstrap-sb-admin-2)
-[![devDependencies Status](https://david-dm.org/StartBootstrap/startbootstrap-sb-admin-2/dev-status.svg)](https://david-dm.org/StartBootstrap/startbootstrap-sb-admin-2?type=dev)
+## 🖥️ 개발 환경
 
-## Download and Installation
+| 구분       | 기술 스택 |
+|------------|-----------|
+| **Frontend** | HTML, CSS, Bootstrap, JavaScript |
+| **Backend**  | Node.js (Express) |
+| **DB**       | PostgreSQL |
+| **Template** | EJS (채팅 페이지) |
+| **ORM**      | pg 모듈 |
+| **실행 환경** | VS Code, Node, Git, pgAdmin |
+| **버전관리** | Git, GitHub |
+| **기타**     | dotenv, nodemon, fetch API 등 |
 
-To begin using this template, choose one of the following options to get started:
+---
 
-* [Download the latest release on Start Bootstrap](https://startbootstrap.com/theme/sb-admin-2/)
-* Install via npm: `npm i startbootstrap-sb-admin-2`
-* Clone the repo: `git clone https://github.com/StartBootstrap/startbootstrap-sb-admin-2.git`
-* [Fork, Clone, or Download on GitHub](https://github.com/StartBootstrap/startbootstrap-sb-admin-2)
+## 🗂️ 주요 기능
 
-## Usage
+### 🎯 경매 기능
+- 경매 상품 등록 / 상세 페이지
+- 입찰 등록 / 입찰 히스토리 확인
+- 마감 시간 자동 처리 (setInterval)
+- 마감 시 낙찰자 확정 및 상태 변경
 
-After installation, run `npm install` and then run `npm start` which will open up a preview of the template in your default browser, watch for changes to core template files, and live reload the browser when changes are saved. You can view the `gulpfile.js` to see which tasks are included with the dev environment.
+### 🛠 관리자 및 백오피스
+- 마감된 상품 DB 처리
+- PostgreSQL DB 연결 (`pg` 사용)
+- 서버 콘솔에서 실시간 로그 확인
 
-### Gulp Tasks
+### 💬 실시간 채팅 (EJS)
+- 로그인된 사용자 간의 실시간 채팅 기능
+- Socket.IO 또는 기본 fetch 사용 가능 (구현 방식에 따라)
 
-* `gulp` the default task that builds everything
-* `gulp watch` browserSync opens the project in your default browser and live reloads when changes are made
-* `gulp css` compiles SCSS files into CSS and minifies the compiled CSS
-* `gulp js` minifies the themes JS file
-* `gulp vendor` copies dependencies from node_modules to the vendor directory
+### 👤 마이페이지
+- 내가 등록한 상품 조회
+- 내가 입찰한 경매 내역 확인
 
-You must have npm installed globally in order to use this build environment. This theme was built using node v11.6.0 and the Gulp CLI v2.0.1. If Gulp is not running properly after running `npm install`, you may need to update node and/or the Gulp CLI locally.
+---
 
-## Bugs and Issues
+## 🔄 경매 처리 흐름
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/StartBootstrap/startbootstrap-sb-admin-2/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](https://startbootstrap.com/theme/sb-admin-2/).
+1. 유저가 경매 상품 등록
+2. 클라이언트에서 6초 간격으로 마감 체크 요청 (`/auction/process-expired-auctions`)
+3. 서버에서 마감 조건을 만족하는 상품 처리
+4. 낙찰자 확정 → DB 업데이트
+5. 프론트에서는 상태에 따라 뱃지 색상 (`badge-success`, `badge-danger` 등) 출력
 
-## About
-
-Start Bootstrap is an open source library of free Bootstrap templates and themes. All of the free templates and themes on Start Bootstrap are released under the MIT license, which means you can use them for any purpose, even for commercial projects.
-
-* <https://startbootstrap.com>
-* <https://twitter.com/SBootstrap>
-
-Start Bootstrap was created by and is maintained by **[David Miller](https://davidmiller.io/)**.
-
-* <https://davidmiller.io>
-* <https://twitter.com/davidmillerhere>
-* <https://github.com/davidtmiller>
-
-Start Bootstrap is based on the [Bootstrap](https://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
-
-## Copyright and License
-
-Copyright 2013-2021 Start Bootstrap LLC. Code released under the [MIT](https://github.com/StartBootstrap/startbootstrap-resume/blob/master/LICENSE) license.
+---
