@@ -60,7 +60,7 @@ QuickPick은 유저가 상품을 등록하고, 실시간으로 경매에 참여�
 - 경매 상태를 DB에서 조회해 **마감 여부 표시**
 
 경매글 작성 기능<br>
-[![Auction Create](https://img.youtube.com/vi/_aWGcO8rupU/0.jpg)](https://youtu.be/_aWGcO8rupU)
+![경매글 작성](images/write.gif)
 
 ---
 
@@ -70,10 +70,10 @@ QuickPick은 유저가 상품을 등록하고, 실시간으로 경매에 참여�
 - 각 경매글 클릭 시 상세 페이지로 이동 가능
 - 마감 시간 기준으로 경매 상태 판별 (`현재 시간 > 마감 시간`)
 
-| 기능 설명 | 화면 예시 |
+| 🟢 경매 진행 중 | 🔴 경매 마감 |
 |-----------|-----------|
-| **🟢 경매 진행 중**<br>경매 마감 전에는 초록색 뱃지(`badge-success`)가 표시됩니다. <br>사용자는 입찰 가능 상태입니다. | ![경매 진행](images/badge_success.PNG) |
-| **🔴 경매 마감**<br>마감 시간이 지나면 자동으로 빨간 뱃지(`badge-danger`)로 변경됩니다. <br>서버가 10초마다 상태를 체크하여 자동 마감 처리합니다. | ![경매 마감](images/badge_danger.png) |
+| ![경매 진행](images/badge_success.PNG) | 경매 마감 전에는 초록색 뱃지(`badge-success`)가 표시됩니다. <br>사용자는 입찰 가능 상태입니다. |
+| ![경매 마감](images/badge_danger.PNG)  | 마감 시간이 지나면 자동으로 빨간 뱃지(`badge-danger`)로 변경됩니다. <br>서버가 10초마다 상태를 체크하여 자동 마감 처리합니다. |
 
 ---
 
@@ -84,7 +84,7 @@ QuickPick은 유저가 상품을 등록하고, 실시간으로 경매에 참여�
 - 채팅 UI는 `EJS`로 구현하여 실시간 반응 처리
 
 채팅 기능<br>
-[![Chat](https://img.youtube.com/vi/_QPltoiJ9vY/0.jpg)](https://youtu.be/_QPltoiJ9vY)
+![실시간 채팅](images/chatting.gif)
 
 ---
 
@@ -94,7 +94,7 @@ QuickPick은 유저가 상품을 등록하고, 실시간으로 경매에 참여�
 - 입력한 정보는 DB에 업데이트되며, 변경 사항은 즉시 반영
 
 마이페이지 기능<br>
-[![My Page](https://img.youtube.com/vi/2-tfMbaMy0s/0.jpg)](https://youtu.be/2-tfMbaMy0s)
+![마이페이지](images/mypage.gif)
 
 ---
 
