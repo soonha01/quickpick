@@ -92,6 +92,10 @@ QuickPick은 유저가 상품을 등록하고, 실시간으로 경매에 참여�
 
 <br>
 
+<img src="./images/chatting.gif" width="700"/>
+
+<br>
+
 
 
 <br>
